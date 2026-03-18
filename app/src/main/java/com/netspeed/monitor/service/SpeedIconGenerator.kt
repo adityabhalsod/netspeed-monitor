@@ -15,7 +15,7 @@ object SpeedIconGenerator {
     // ====================================================
 
     // Icon canvas size in pixels — larger canvas = more detail before Android downscales
-    private const val SIZE = 128
+    private const val SIZE = 130
 
     // Font size for speed value (top line: "1.2", "23", etc.)
     private const val VALUE_TEXT_SIZE = 90f
