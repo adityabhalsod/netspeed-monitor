@@ -1,0 +1,283 @@
+# ============================================================================
+# Android Release Build & Publish — GitHub Actions
+# ============================================================================
+# Triggers on push to main, alpha, and beta branches.
+# Builds a clean release APK via Gradle, auto-increments the version,
+# creates a GitHub Release with changelog, and uploads the APK as a
+# downloadable asset.
+#
+# Branch → Release channel mapping:
+#   main  → stable release    (v1.0.0, v1.1.0, …)
+#   beta  → beta pre-release  (v1.0.0-beta.1, v1.0.0-beta.2, …)
+#   alpha → alpha pre-release (v1.0.0-alpha.1, v1.0.0-alpha.2, …)
+#
+# Build requirements:
+#   - JDK 17 (Kotlin 1.9 + AGP 8.3 requirement)
+#   - NDK 27.1.12297006 (C++ native speed calculator)
+#   - CMake 3.22.1 (native build system)
+#   - Gradle 8.5 via wrapper
+# ============================================================================
+
+name: Android Release
+
+on:
+  push:
+    branches:
+      - main
+      - alpha
+      - beta
+
+# Only one release workflow per branch at a time
+concurrency:
+  group: release-${{ github.ref_name }}
+  cancel-in-progress: true
+
+# Permissions required to create releases and push tags
+permissions:
+  contents: write
+
+env:
+  JAVA_VERSION: "17"
+  NDK_VERSION: "27.1.12297006"
+  # Gradle performance flags for CI
+  GRADLE_OPTS: >-
+    -Dorg.gradle.daemon=true
+    -Dorg.gradle.parallel=true
+    -Dorg.gradle.workers.max=4
+    -Dorg.gradle.jvmargs=-Xmx4g -XX:+HeapDumpOnOutOfMemoryError -XX:+UseParallelGC
+    -Dorg.gradle.configureondemand=true
+    -Dorg.gradle.vfs.watch=false
+
+jobs:
+  build-and-release:
+    name: Build & Release (${{ github.ref_name }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    # Skip when commit message contains [skip ci] or [ci skip]
+    if: |
+      !contains(github.event.head_commit.message, '[skip ci]') &&
+      !contains(github.event.head_commit.message, '[ci skip]')
+
+    steps:
+      # ── Checkout ──────────────────────────────────────────────────────
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Full history needed for changelog generation
+
+      # ── Setup JDK ─────────────────────────────────────────────────────
+      - name: Set up JDK ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: ${{ env.JAVA_VERSION }}
+
+      # ── Setup Android SDK + NDK + CMake ───────────────────────────────
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install NDK and CMake
+        run: |
+          sdkmanager --install "ndk;${{ env.NDK_VERSION }}" "cmake;3.22.1"
+
+      # ── Cache Gradle wrapper & dependencies ───────────────────────────
+      - name: Cache Gradle dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            gradle-${{ runner.os }}-
+
+      # ── Determine version & release channel ───────────────────────────
+      - name: Determine version and release channel
+        id: version
+        run: |
+          # Read versionName from app/build.gradle.kts
+          BASE_VERSION=$(grep 'versionName' app/build.gradle.kts | head -1 | sed 's/.*"\(.*\)".*/\1/')
+          echo "base_version=$BASE_VERSION" >> "$GITHUB_OUTPUT"
+
+          BRANCH="${GITHUB_REF_NAME}"
+          echo "branch=$BRANCH" >> "$GITHUB_OUTPUT"
+
+          # Count commits since last tag for build number
+          LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+
+          if [ -n "$LAST_TAG" ]; then
+            BUILD_NUMBER=$(git rev-list "${LAST_TAG}..HEAD" --count)
+          else
+            BUILD_NUMBER=$(git rev-list HEAD --count)
+          fi
+          # Ensure build number is at least 1
+          if [ "$BUILD_NUMBER" -lt 1 ]; then
+            BUILD_NUMBER=1
+          fi
+          echo "build_number=$BUILD_NUMBER" >> "$GITHUB_OUTPUT"
+
+          # Construct version string based on branch channel
+          if [ "$BRANCH" = "main" ]; then
+            VERSION="v${BASE_VERSION}"
+            APK_NAME="netspeed-monitor-v${BASE_VERSION}.apk"
+            PRERELEASE="false"
+            CHANNEL="stable"
+          elif [ "$BRANCH" = "beta" ]; then
+            VERSION="v${BASE_VERSION}-beta.${BUILD_NUMBER}"
+            APK_NAME="netspeed-monitor-v${BASE_VERSION}-beta.${BUILD_NUMBER}.apk"
+            PRERELEASE="true"
+            CHANNEL="beta"
+          elif [ "$BRANCH" = "alpha" ]; then
+            VERSION="v${BASE_VERSION}-alpha.${BUILD_NUMBER}"
+            APK_NAME="netspeed-monitor-v${BASE_VERSION}-alpha.${BUILD_NUMBER}.apk"
+            PRERELEASE="true"
+            CHANNEL="alpha"
+          fi
+
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "apk_name=$APK_NAME" >> "$GITHUB_OUTPUT"
+          echo "prerelease=$PRERELEASE" >> "$GITHUB_OUTPUT"
+          echo "channel=$CHANNEL" >> "$GITHUB_OUTPUT"
+
+          echo "📦 Version: $VERSION | Channel: $CHANNEL | Build: $BUILD_NUMBER"
+
+      # ── Inject versionCode into build ─────────────────────────────────
+      - name: Update versionCode
+        run: |
+          VERSION_CODE=${{ steps.version.outputs.build_number }}
+          echo "Setting versionCode=$VERSION_CODE"
+          # Replace versionCode in app/build.gradle.kts
+          sed -i "s/versionCode = [0-9]*/versionCode = $VERSION_CODE/" app/build.gradle.kts
+
+      # ── Generate changelog from commits ───────────────────────────────
+      - name: Generate changelog
+        id: changelog
+        run: |
+          LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+
+          if [ -n "$LAST_TAG" ]; then
+            echo "Generating changelog since $LAST_TAG"
+            RANGE="${LAST_TAG}..HEAD"
+          else
+            echo "No previous tag — using full history"
+            RANGE="HEAD"
+          fi
+
+          {
+            echo "## What's Changed"
+            echo ""
+
+            FEATURES=$(git log "$RANGE" --pretty=format:"- %s (%h)" --grep="^feat" -i 2>/dev/null || true)
+            if [ -n "$FEATURES" ]; then
+              echo "### ✨ Features"
+              echo "$FEATURES"
+              echo ""
+            fi
+
+            FIXES=$(git log "$RANGE" --pretty=format:"- %s (%h)" --grep="^fix" -i 2>/dev/null || true)
+            if [ -n "$FIXES" ]; then
+              echo "### 🐛 Bug Fixes"
+              echo "$FIXES"
+              echo ""
+            fi
+
+            PERF=$(git log "$RANGE" --pretty=format:"- %s (%h)" --grep="^perf" -i 2>/dev/null || true)
+            if [ -n "$PERF" ]; then
+              echo "### ⚡ Performance"
+              echo "$PERF"
+              echo ""
+            fi
+
+            OTHER=$(git log "$RANGE" --pretty=format:"- %s (%h)" --invert-grep --grep="^feat" --grep="^fix" --grep="^perf" -i 2>/dev/null || true)
+            if [ -n "$OTHER" ]; then
+              echo "### 📦 Other Changes"
+              echo "$OTHER"
+              echo ""
+            fi
+
+            echo "---"
+            echo ""
+            echo "**Full Changelog**: https://github.com/${{ github.repository }}/compare/${LAST_TAG:-initial}...${{ steps.version.outputs.version }}"
+          } > changelog.md
+
+          cat changelog.md
+
+          {
+            echo "body<<CHANGELOG_EOF"
+            cat changelog.md
+            echo "CHANGELOG_EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      # ── Make Gradle wrapper executable ────────────────────────────────
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
+      # ── Build release APK ─────────────────────────────────────────────
+      - name: Build release APK
+        run: |
+          ./gradlew app:assembleRelease \
+            -x lint \
+            -x test \
+            --parallel \
+            --configure-on-demand \
+            --build-cache \
+            --daemon
+
+      # ── Rename APK to versioned filename ──────────────────────────────
+      - name: Rename APK
+        run: |
+          APK_SRC="app/build/outputs/apk/release/app-release-unsigned.apk"
+
+          # Fall back to signed APK name if unsigned doesn't exist
+          if [ ! -f "$APK_SRC" ]; then
+            APK_SRC="app/build/outputs/apk/release/app-release.apk"
+          fi
+
+          APK_DEST="${{ steps.version.outputs.apk_name }}"
+          cp "$APK_SRC" "$APK_DEST"
+
+          APK_SIZE=$(du -h "$APK_DEST" | cut -f1)
+          echo "📦 APK: $APK_DEST ($APK_SIZE)"
+
+      # ── Create Git tag ────────────────────────────────────────────────
+      - name: Create and push tag
+        run: |
+          TAG="${{ steps.version.outputs.version }}"
+
+          if git rev-parse "$TAG" >/dev/null 2>&1; then
+            echo "⚠️  Tag $TAG already exists, skipping tag creation"
+          else
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git tag -a "$TAG" -m "Release $TAG"
+            git push origin "$TAG"
+            echo "✅ Created and pushed tag $TAG"
+          fi
+
+      # ── Create GitHub Release with APK asset ──────────────────────────
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version.outputs.version }}
+          name: "Net Speed Monitor ${{ steps.version.outputs.version }}"
+          body: ${{ steps.changelog.outputs.body }}
+          prerelease: ${{ steps.version.outputs.prerelease == 'true' }}
+          draft: false
+          generate_release_notes: false
+          files: |
+            ${{ steps.version.outputs.apk_name }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # ── Post-release summary ──────────────────────────────────────────
+      - name: Release summary
+        run: |
+          echo "============================================"
+          echo "🚀 Release Published!"
+          echo "============================================"
+          echo "Version  : ${{ steps.version.outputs.version }}"
+          echo "Channel  : ${{ steps.version.outputs.channel }}"
+          echo "APK      : ${{ steps.version.outputs.apk_name }}"
+          echo "Pre-rel  : ${{ steps.version.outputs.prerelease }}"
+          echo "Release  : https://github.com/${{ github.repository }}/releases/tag/${{ steps.version.outputs.version }}"
+          echo "============================================"

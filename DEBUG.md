@@ -4,6 +4,51 @@ Complete instructions for running **Net Speed Monitor** on a physical Android de
 
 ---
 
+## ⚡ Quick Reference
+
+### Debug Build
+
+```bash
+# Build + install debug APK directly to connected device (recommended)
+./gradlew installDebug
+
+# Build debug APK only (without installing)
+./gradlew assembleDebug
+# Output: app/build/outputs/apk/debug/app-debug.apk
+
+# Clean + build (when you need a fresh start)
+./gradlew clean assembleDebug
+
+# Launch app via ADB after install
+adb shell am start -n com.netspeed.monitor.debug/.MainActivity
+```
+
+### Production Release Build
+
+```bash
+# Build unsigned release APK
+./gradlew assembleRelease
+# Output: app/build/outputs/apk/release/app-release.apk
+
+# Build Android App Bundle (AAB) for Google Play Store
+./gradlew bundleRelease
+# Output: app/build/outputs/bundle/release/app-release.aab
+
+# Build signed release APK (requires signing config in build.gradle.kts)
+export KEYSTORE_PASS="your_keystore_password"
+export KEY_PASS="your_key_password"
+./gradlew assembleRelease
+
+# Skip lint and tests for faster release CI builds
+./gradlew assembleRelease -x lint -x test --parallel
+
+# Install release APK to device and launch
+adb install -r app/build/outputs/apk/release/app-release.apk
+adb shell am start -n com.netspeed.monitor/.MainActivity
+```
+
+---
+
 ## 📋 Table of Contents
 
 1. [Prerequisites](#1-prerequisites)

@@ -47,7 +47,13 @@ The app is designed to be **minimal, fast, and battery-friendly**. It uses no ad
 
 ## 📱 Screenshots
 
-> _Build and run the app to see the live UI. Preview is available inside Android Studio via `@Preview` composables._
+| Splash Screen | Home — Monitoring Off | Home — Monitoring On |
+|:---:|:---:|:---:|
+| ![Splash](screenshots/splash_screen.jpg) | ![Home Off](screenshots/home_when_monitor_stop_screen.jpg) | ![Home On](screenshots/home_when_monitor_start_screen.jpg) |
+
+| Settings Screen | Status Bar Notification |
+|:---:|:---:|
+| ![Settings](screenshots/settings_screen.jpg) | ![Notification](screenshots/notification_bar.jpg) |
 
 ---
 
@@ -262,16 +268,54 @@ HomeViewModel.toggleMonitoring()
 
 ## 🚀 Quick Build & Run
 
-See **[DEBUG.md](DEBUG.md)** for the full guide covering:
-- Prerequisites & environment setup
-- Debug build and ADB install
-- Production release build with signing
-- Logcat filtering & crash debugging
-- Common troubleshooting
+See **[DEBUG.md](DEBUG.md)** for the full guide covering prerequisites, ADB setup, logcat filtering, signing, and troubleshooting.
+
+### Debug Build
 
 ```bash
-# One-liner: build + install debug APK to connected device
-chmod +x gradlew && ./gradlew installDebug
+# Make wrapper executable (first time only)
+chmod +x gradlew
+
+# Build + install debug APK directly to connected device
+./gradlew installDebug
+
+# Or: build APK without installing
+./gradlew assembleDebug
+# Output: app/build/outputs/apk/debug/app-debug.apk
+
+# Launch app after install
+adb shell am start -n com.netspeed.monitor.debug/.MainActivity
+```
+
+### Production Release Build
+
+```bash
+# Build unsigned release APK
+./gradlew assembleRelease
+# Output: app/build/outputs/apk/release/app-release.apk
+
+# Build AAB for Google Play Store
+./gradlew bundleRelease
+# Output: app/build/outputs/bundle/release/app-release.aab
+
+# Build with signing credentials (set env vars first)
+export KEYSTORE_PASS="your_keystore_password"
+export KEY_PASS="your_key_password"
+./gradlew assembleRelease
+
+# Install release APK to device
+adb install -r app/build/outputs/apk/release/app-release.apk
+adb shell am start -n com.netspeed.monitor/.MainActivity
+```
+
+### Clean Build
+
+```bash
+# Wipe all build outputs and rebuild from scratch
+./gradlew clean assembleDebug
+
+# Skip lint and tests for faster builds
+./gradlew assembleRelease -x lint -x test
 ```
 
 ---
