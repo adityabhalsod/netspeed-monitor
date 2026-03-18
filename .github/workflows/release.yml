@@ -212,8 +212,36 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
+      # ── Decode signing keystore from secrets ──────────────────────────
+      - name: Decode keystore
+        run: |
+          # If KEYSTORE_BASE64 secret is set, decode it to a file
+          if [ -n "${{ secrets.KEYSTORE_BASE64 }}" ]; then
+            echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > ${{ github.workspace }}/release.keystore
+            echo "✅ Decoded release keystore from secrets"
+          else
+            # Generate a temporary keystore so the APK is always signed & installable
+            keytool -genkeypair -v \
+              -keystore ${{ github.workspace }}/release.keystore \
+              -alias release \
+              -keyalg RSA \
+              -keysize 2048 \
+              -validity 10000 \
+              -storepass android \
+              -keypass android \
+              -dname "CN=Net Speed Monitor, OU=Dev, O=NetSpeed, L=Unknown, ST=Unknown, C=US"
+            echo "⚠️  No KEYSTORE_BASE64 secret found — using auto-generated keystore"
+          fi
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+
       # ── Build release APK ─────────────────────────────────────────────
       - name: Build release APK
+        env:
+          KEYSTORE_FILE: ${{ github.workspace }}/release.keystore
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD || 'android' }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS || 'release' }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD || 'android' }}
         run: |
           ./gradlew app:assembleRelease \
             -x lint \
@@ -226,11 +254,12 @@ jobs:
       # ── Rename APK to versioned filename ──────────────────────────────
       - name: Rename APK
         run: |
-          APK_SRC="app/build/outputs/apk/release/app-release-unsigned.apk"
+          # Signed APK is named app-release.apk
+          APK_SRC="app/build/outputs/apk/release/app-release.apk"
 
-          # Fall back to signed APK name if unsigned doesn't exist
+          # Fall back to unsigned APK name
           if [ ! -f "$APK_SRC" ]; then
-            APK_SRC="app/build/outputs/apk/release/app-release.apk"
+            APK_SRC="app/build/outputs/apk/release/app-release-unsigned.apk"
           fi
 
           APK_DEST="${{ steps.version.outputs.apk_name }}"
