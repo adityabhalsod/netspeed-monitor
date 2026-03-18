@@ -11,6 +11,7 @@ import android.os.Build
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import androidx.core.app.ServiceCompat
+import androidx.core.graphics.drawable.IconCompat
 import com.netspeed.monitor.MainActivity
 import com.netspeed.monitor.R
 import com.netspeed.monitor.domain.model.NetworkSpeed
@@ -111,16 +112,21 @@ class SpeedMonitorService : Service() {
         stopSelf()
     }
 
-    // Updates the persistent notification with the latest speed data
+    // Updates the persistent notification with the latest speed data and dynamic status bar icon
     private fun updateNotification(speed: NetworkSpeed) {
         // Format speed values to human-readable strings using domain model helpers
         val downloadText = NetworkSpeed.formatSpeed(speed.downloadSpeed)
         val uploadText = NetworkSpeed.formatSpeed(speed.uploadSpeed)
 
-        // Build a new notification with updated speed values
+        // Generate a dual-speed bitmap icon: ↓download on top, ↑upload on bottom, both on one line each
+        val speedBitmap = SpeedIconGenerator.createDualSpeedIcon(speed.downloadSpeed, speed.uploadSpeed)
+        val speedIcon = IconCompat.createWithBitmap(speedBitmap)
+
+        // Build a new notification with updated speed values and dynamic icon
         val notification = buildNotification(
             downloadSpeed = downloadText,
-            uploadSpeed = uploadText
+            uploadSpeed = uploadText,
+            dynamicIcon = speedIcon
         )
 
         // Push the updated notification to the system; replaces the existing one by same ID
@@ -128,7 +134,12 @@ class SpeedMonitorService : Service() {
     }
 
     // Builds a Notification with download and upload speed prominently displayed
-    private fun buildNotification(downloadSpeed: String, uploadSpeed: String): Notification {
+    // When dynamicIcon is provided, uses it as the status bar icon to show live speed numbers
+    private fun buildNotification(
+        downloadSpeed: String,
+        uploadSpeed: String,
+        dynamicIcon: IconCompat? = null
+    ): Notification {
         // PendingIntent to open MainActivity when the notification is tapped
         val pendingIntent = PendingIntent.getActivity(
             this,
@@ -146,8 +157,9 @@ class SpeedMonitorService : Service() {
         )
 
         // Build notification with live speed as the primary content
-        return NotificationCompat.Builder(this, CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_speed_notification)
+        val builder = NotificationCompat.Builder(this, CHANNEL_ID)
+            // Use dynamic bitmap icon if available, otherwise fall back to static drawable
+            .setSmallIcon(dynamicIcon ?: IconCompat.createWithResource(this, R.drawable.ic_speed_notification))
             // Speed values as the main title for maximum visibility in collapsed view
             .setContentTitle("↓ $downloadSpeed   ↑ $uploadSpeed")
             .setContentText("Tap to open Net Speed Monitor")
@@ -175,7 +187,8 @@ class SpeedMonitorService : Service() {
                     .setBigContentTitle("↓ $downloadSpeed   ↑ $uploadSpeed")
                     .bigText("Download: $downloadSpeed\nUpload: $uploadSpeed")
             )
-            .build()
+
+        return builder.build()
     }
 
     // Creates the notification channel required on Android 8.0 (API 26) and higher
