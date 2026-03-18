@@ -4,8 +4,6 @@ plugins {
     id("com.android.application")
     // Kotlin Android plugin for Kotlin compilation
     id("org.jetbrains.kotlin.android")
-    // Compose compiler plugin for Jetpack Compose
-    id("org.jetbrains.kotlin.plugin.compose")
     // Hilt dependency injection plugin
     id("com.google.dagger.hilt.android")
     // KSP for annotation processing (used by Hilt)
@@ -17,6 +15,8 @@ android {
     namespace = "com.netspeed.monitor"
     // Compile against Android API 34
     compileSdk = 34
+    // Pin to the NDK version installed at ~/Android/Sdk/ndk/27.1.12297006
+    ndkVersion = "27.1.12297006"
 
     defaultConfig {
         // Unique application identifier
@@ -38,7 +38,8 @@ android {
             useSupportLibrary = true
         }
 
-        // NDK: specify ABI filters to build native libs for common architectures
+        // NDK: Samsung device is arm64-v8a; include armeabi-v7a for older Samsung variants.
+        // x86/x86_64 are emulator-only ABIs — excluded here to keep build times fast.
         ndk {
             abiFilters += listOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64")
         }
@@ -86,6 +87,11 @@ android {
     buildFeatures {
         compose = true
         buildConfig = true
+    }
+
+    // Compose compiler extension version compatible with Kotlin 1.9.22
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.8"
     }
 
     // Point to CMakeLists.txt for native C++ build configuration

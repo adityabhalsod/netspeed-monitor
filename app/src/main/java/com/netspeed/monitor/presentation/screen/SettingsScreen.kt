@@ -23,7 +23,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
@@ -244,10 +243,10 @@ private fun UpdateIntervalDropdown(
                             contentDescription = "Interval"
                         )
                     },
-                    // Anchor the dropdown to this text field
+                    // Anchor the dropdown to this text field (no-arg overload for Compose BOM 2024.02)
                     modifier = Modifier
                         .fillMaxWidth()
-                        .menuAnchor(type = MenuAnchorType.PrimaryNotEditable)
+                        .menuAnchor()
                 )
 
                 // Dropdown menu displaying all available options
