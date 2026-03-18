@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -24,6 +25,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -32,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
@@ -43,93 +46,112 @@ import androidx.compose.ui.unit.sp
 import com.netspeed.monitor.domain.model.NetworkSpeed
 import com.netspeed.monitor.presentation.theme.DownloadGreen
 import com.netspeed.monitor.presentation.theme.NetSpeedTheme
+import com.netspeed.monitor.presentation.theme.TextSecondary
 import com.netspeed.monitor.presentation.theme.UploadOrange
 
-// Composite speed gauge card showing both download and upload speeds with arc visualizations
+// Modern speed gauge card with gradient background and glowing neon arcs
 @Composable
 fun SpeedGaugeCard(
     modifier: Modifier = Modifier,
-    // Current network speed data to display
+    // Current network speed data to display on the gauges
     networkSpeed: NetworkSpeed,
     // Whether the monitoring service is actively running
     isMonitoring: Boolean
 ) {
     Card(
-        modifier = modifier.fillMaxWidth(),
-        // Rounded corners for modern card appearance
-        shape = RoundedCornerShape(24.dp),
-        // Use surface variant for subtle card elevation appearance
+        modifier = modifier,
+        shape = RoundedCornerShape(28.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant
+            containerColor = MaterialTheme.colorScheme.surface
         ),
-        // Slight elevation for depth
         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
     ) {
+        // Gradient background for modern depth effect
         Column(
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(
+                    Brush.verticalGradient(
+                        colors = listOf(
+                            MaterialTheme.colorScheme.surface,
+                            MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.7f)
+                        )
+                    )
+                )
+                .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Status indicator row at top of card
+            // Status pill indicating active/inactive monitoring
             StatusIndicator(isMonitoring = isMonitoring)
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(20.dp))
 
             // Side-by-side download and upload speed gauges
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                // Download speed gauge with green color and downward arrow icon
+                // Download gauge with green neon arc and downward arrow
                 SpeedArcGauge(
                     label = "Download",
                     speed = networkSpeed.downloadSpeed,
                     color = DownloadGreen,
-                    icon = { ArrowIcon(isDownload = true) }
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Default.ArrowDownward,
+                            contentDescription = "Download",
+                            tint = DownloadGreen,
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
                 )
-                // Upload speed gauge with orange color and upward arrow icon
+                // Upload gauge with orange neon arc and upward arrow
                 SpeedArcGauge(
                     label = "Upload",
                     speed = networkSpeed.uploadSpeed,
                     color = UploadOrange,
-                    icon = { ArrowIcon(isDownload = false) }
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Default.ArrowUpward,
+                            contentDescription = "Upload",
+                            tint = UploadOrange,
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
                 )
             }
         }
     }
 }
 
-// Circular arc gauge displaying a single speed value with animated arc fill
+// Single speed gauge with animated arc, glow effect, and centered speed text
 @Composable
-fun SpeedArcGauge(
+private fun SpeedArcGauge(
     modifier: Modifier = Modifier,
-    // Label text shown below the gauge ("Download" or "Upload")
     label: String,
-    // Speed value in bytes per second
     speed: Double,
-    // Accent color for the arc fill
     color: Color,
-    // Custom icon slot above the speed text
     icon: @Composable () -> Unit = {}
 ) {
-    // Normalize speed to a 0.0..1.0 sweep fraction (max visible threshold: 100 MB/s)
-    val maxSpeedBps = 100.0 * 1_048_576 // 100 MB/s as the gauge maximum
+    // Normalize speed to 0..1 fraction (gauge maximum: 100 MB/s)
+    val maxSpeedBps = 100.0 * 1_048_576
     val rawFraction = (speed / maxSpeedBps).coerceIn(0.0, 1.0).toFloat()
 
-    // Animate arc sweep angle changes smoothly for a polished gauge effect
+    // Smooth arc animation for polished gauge movement
     val sweepFraction by animateFloatAsState(
         targetValue = rawFraction,
-        animationSpec = tween(durationMillis = 600, easing = FastOutSlowInEasing),
+        animationSpec = tween(durationMillis = 800, easing = FastOutSlowInEasing),
         label = "speedArc"
     )
 
-    // Animate color saturation: slightly dim when speed is zero
+    // Dim arc when speed is zero for visual feedback
     val arcColor by animateColorAsState(
-        targetValue = if (speed > 0) color else color.copy(alpha = 0.4f),
+        targetValue = if (speed > 0) color else color.copy(alpha = 0.3f),
         animationSpec = tween(durationMillis = 400),
         label = "arcColor"
     )
 
-    // Format the speed value for numeric display
+    // Format speed value and unit label for display
     val speedText = NetworkSpeed.speedValue(speed)
     val unitText = NetworkSpeed.speedUnit(speed)
 
@@ -137,144 +159,163 @@ fun SpeedArcGauge(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Box containing stack of the canvas arc and centered text
+        // Layered box: canvas arc behind centered text overlay
         Box(
             contentAlignment = Alignment.Center,
-            modifier = Modifier.size(140.dp)
+            modifier = Modifier.size(150.dp)
         ) {
-            // Arc drawn on Canvas using drawArc with stroke style
-            CircularArcCanvas(
+            // Draws track, glow, and active arc layers
+            GlowingArcCanvas(
                 sweepFraction = sweepFraction,
                 color = arcColor,
-                size = 140.dp,
-                strokeWidth = 12.dp
+                size = 150.dp,
+                strokeWidth = 14.dp
             )
-            // Centered column with icon, numeric value, and unit
+            // Speed value, unit, and icon centered inside the arc
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 icon()
-                Spacer(modifier = Modifier.height(2.dp))
-                // Large numeric speed value
+                Spacer(modifier = Modifier.height(4.dp))
+                // Large bold speed number
                 Text(
                     text = if (speedText < 10.0) String.format("%.1f", speedText)
-                           else String.format("%.0f", speedText),
-                    style = MaterialTheme.typography.displayMedium,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    fontWeight = FontWeight.ExtraBold,
-                    fontSize = 28.sp
+                    else String.format("%.0f", speedText),
+                    style = MaterialTheme.typography.displayMedium.copy(
+                        fontWeight = FontWeight.Black,
+                        fontSize = 32.sp
+                    ),
+                    color = MaterialTheme.colorScheme.onSurface
                 )
-                // Unit label (KB/s, MB/s, B/s)
+                // Colored unit label below the number
                 Text(
                     text = unitText,
-                    style = MaterialTheme.typography.labelSmall,
-                    color = arcColor
+                    style = MaterialTheme.typography.labelMedium,
+                    color = arcColor,
+                    fontWeight = FontWeight.Bold
                 )
             }
         }
 
-        Spacer(modifier = Modifier.height(4.dp))
+        Spacer(modifier = Modifier.height(6.dp))
 
-        // Label below the gauge circle
+        // Label below the gauge ("Download" or "Upload")
         Text(
             text = label,
             style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            fontWeight = FontWeight.Medium
         )
     }
 }
 
-// Canvas-based arc that draws a background track and a colored foreground arc
+// Canvas drawing with three arc layers: dim track, glow halo, and bright foreground
 @Composable
-private fun CircularArcCanvas(
+private fun GlowingArcCanvas(
     sweepFraction: Float,
     color: Color,
     size: Dp,
     strokeWidth: Dp
 ) {
-    // Background arc track color (dimmed version of the arc color)
-    val trackColor = color.copy(alpha = 0.15f)
+    // Dim track color for the background arc
+    val trackColor = color.copy(alpha = 0.1f)
+    // Wider, semi-transparent layer for neon glow effect
+    val glowColor = color.copy(alpha = 0.2f)
 
     Canvas(modifier = Modifier.size(size)) {
         val canvasSize = this.size
-        val strokePx = strokeWidth.toPx()  // Convert dp to pixels for drawing
-        val inset = strokePx / 2           // Inset to keep arc within bounds
-
-        // Calculate arc bounds centered in the canvas
-        val arcSize = Size(canvasSize.width - strokePx, canvasSize.height - strokePx)
+        val strokePx = strokeWidth.toPx()
+        val glowStrokePx = strokePx + 10f
+        val inset = glowStrokePx / 2
+        val arcSize = Size(canvasSize.width - glowStrokePx, canvasSize.height - glowStrokePx)
         val topLeft = Offset(inset, inset)
 
-        // Draw full background track arc (270 degree sweep starting from bottom-left)
+        // Layer 1: full background track arc (270° sweep from bottom-left)
         drawArc(
             color = trackColor,
-            startAngle = 135f,       // Start at bottom-left of circle
-            sweepAngle = 270f,       // Full gauge sweep
-            useCenter = false,       // Draw as an arc not a pie slice
-            topLeft = topLeft,
-            size = arcSize,
-            style = Stroke(width = strokePx, cap = StrokeCap.Round)
-        )
-
-        // Draw filled foreground arc proportional to the current speed fraction
-        drawArc(
-            color = color,
             startAngle = 135f,
-            sweepAngle = 270f * sweepFraction,  // Sweep matches normalized speed
+            sweepAngle = 270f,
             useCenter = false,
             topLeft = topLeft,
             size = arcSize,
             style = Stroke(width = strokePx, cap = StrokeCap.Round)
         )
+
+        if (sweepFraction > 0.001f) {
+            // Layer 2: glow halo — wider arc with low opacity
+            drawArc(
+                color = glowColor,
+                startAngle = 135f,
+                sweepAngle = 270f * sweepFraction,
+                useCenter = false,
+                topLeft = topLeft,
+                size = arcSize,
+                style = Stroke(width = glowStrokePx, cap = StrokeCap.Round)
+            )
+            // Layer 3: main colored arc on top
+            drawArc(
+                color = color,
+                startAngle = 135f,
+                sweepAngle = 270f * sweepFraction,
+                useCenter = false,
+                topLeft = topLeft,
+                size = arcSize,
+                style = Stroke(width = strokePx, cap = StrokeCap.Round)
+            )
+        }
     }
 }
 
-// Directional arrow icon indicating download (down) or upload (up)
-@Composable
-private fun ArrowIcon(isDownload: Boolean) {
-    Icon(
-        imageVector = if (isDownload) Icons.Default.ArrowDownward else Icons.Default.ArrowUpward,
-        contentDescription = if (isDownload) "Download" else "Upload",
-        tint = if (isDownload) DownloadGreen else UploadOrange,
-        modifier = Modifier.size(16.dp)
-    )
-}
-
-// Small status pill showing active/inactive monitoring state
+// Animated status pill showing monitoring state with colored dot
 @Composable
 private fun StatusIndicator(isMonitoring: Boolean) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center
+    // Animate indicator color between active green and muted grey
+    val indicatorColor by animateColorAsState(
+        targetValue = if (isMonitoring) DownloadGreen else TextSecondary,
+        animationSpec = tween(durationMillis = 300),
+        label = "statusColor"
+    )
+
+    // Pill-shaped surface with subtle tinted background
+    Surface(
+        shape = RoundedCornerShape(20.dp),
+        color = indicatorColor.copy(alpha = 0.15f),
+        modifier = Modifier.padding(horizontal = 4.dp)
     ) {
-        // Colored dot: green when active, grey when inactive
-        Box(
-            modifier = Modifier
-                .size(8.dp)
-                .clip(CircleShape)
-                .background(
-                    if (isMonitoring) DownloadGreen else MaterialTheme.colorScheme.onSurfaceVariant
-                )
-        )
-        Spacer(modifier = Modifier.size(6.dp))
-        // Status label text
-        Text(
-            text = if (isMonitoring) "Monitoring" else "Stopped",
-            style = MaterialTheme.typography.labelSmall,
-            color = if (isMonitoring) DownloadGreen else MaterialTheme.colorScheme.onSurfaceVariant
-        )
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
+        ) {
+            // Small colored dot indicator
+            Box(
+                modifier = Modifier
+                    .size(8.dp)
+                    .clip(CircleShape)
+                    .background(indicatorColor)
+            )
+            Spacer(modifier = Modifier.width(6.dp))
+            // Status label text
+            Text(
+                text = if (isMonitoring) "Monitoring" else "Stopped",
+                style = MaterialTheme.typography.labelSmall,
+                color = indicatorColor,
+                fontWeight = FontWeight.SemiBold
+            )
+        }
     }
 }
 
-// Preview function showing the SpeedGaugeCard in a dark theme context
-@Preview(showBackground = true, backgroundColor = 0xFF0D1B2A)
+@Preview(showBackground = true, backgroundColor = 0xFF0A0E21)
 @Composable
 private fun SpeedGaugeCardPreview() {
     NetSpeedTheme(darkTheme = true) {
         SpeedGaugeCard(
             modifier = Modifier.padding(16.dp),
             networkSpeed = NetworkSpeed(
-                downloadSpeed = 2_500_000.0,  // 2.5 MB/s for preview
-                uploadSpeed = 512_000.0       // 512 KB/s for preview
+                downloadSpeed = 2_500_000.0,
+                uploadSpeed = 512_000.0
             ),
             isMonitoring = true
         )
     }
 }
+
+

@@ -1,71 +1,95 @@
 package com.netspeed.monitor.data.repository
 
-import com.netspeed.monitor.data.native_.NativeSpeedBridge
+import com.netspeed.monitor.data.speed.TrafficStatsCalculator
 import com.netspeed.monitor.domain.model.NetworkSpeed
+import com.netspeed.monitor.domain.repository.PreferencesRepository
 import com.netspeed.monitor.domain.repository.SpeedRepository
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.shareIn
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Singleton
 
-// Implementation of SpeedRepository that uses the native C++ calculator via JNI
+// SpeedRepository using Android TrafficStats API for reliable speed measurement on all devices
+// Uses SharedFlow so multiple consumers (UI + Service) share a single data stream
 @Singleton
 class SpeedRepositoryImpl @Inject constructor(
-    // Injected JNI bridge to the native C++ speed calculator
-    private val nativeSpeedBridge: NativeSpeedBridge
+    // TrafficStats-based calculator that works on Android 10+ where /proc/net/dev is restricted
+    private val trafficStatsCalculator: TrafficStatsCalculator,
+    // Preferences for reading the user's update interval setting
+    private val preferencesRepository: PreferencesRepository
 ) : SpeedRepository {
 
-    // Default interval between speed measurements in milliseconds
     companion object {
         const val DEFAULT_INTERVAL_MS = 1000L
     }
 
-    // Configurable update interval; can be changed at runtime
-    var updateIntervalMs: Long = DEFAULT_INTERVAL_MS
+    // Update interval updated reactively from user preferences
+    @Volatile
+    private var updateIntervalMs: Long = DEFAULT_INTERVAL_MS
 
-    // Emits continuous NetworkSpeed readings at the configured interval
-    override fun observeSpeed(): Flow<NetworkSpeed> = flow {
-        // Infinite loop to continuously emit speed updates
+    // Long-lived scope for the shared flow and preference observation
+    private val repositoryScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
+
+    init {
+        // Reactively observe interval preference changes and apply them
+        repositoryScope.launch {
+            preferencesRepository.observeUpdateInterval().collect { interval ->
+                updateIntervalMs = interval
+            }
+        }
+    }
+
+    // Single upstream flow shared among all collectors via shareIn
+    // Starts when first subscriber connects, stops 5s after last unsubscribes
+    private val sharedSpeedFlow: Flow<NetworkSpeed> = flow {
+        // Reset calculator to begin fresh session tracking
+        trafficStatsCalculator.reset()
         while (true) {
-            // Calculate current speed using native C++ library via JNI
-            val (downloadSpeed, uploadSpeed) = nativeSpeedBridge.calculateSpeed()
-            // Get total byte counts for cumulative usage display
-            val (totalRx, totalTx) = nativeSpeedBridge.getTotalBytes()
-
-            // Emit a new NetworkSpeed snapshot with all measurements
+            // Calculate current speed using TrafficStats API
+            val (downloadSpeed, uploadSpeed) = trafficStatsCalculator.calculateSpeed()
+            // Get session-specific byte totals (since monitoring started)
+            val (sessionRx, sessionTx) = trafficStatsCalculator.getSessionBytes()
             emit(
                 NetworkSpeed(
                     downloadSpeed = downloadSpeed,
                     uploadSpeed = uploadSpeed,
-                    totalRxBytes = totalRx,
-                    totalTxBytes = totalTx
+                    totalRxBytes = sessionRx,
+                    totalTxBytes = sessionTx
                 )
             )
-
-            // Wait for the configured interval before next measurement
+            // Wait for the user-configured interval before next measurement
             delay(updateIntervalMs)
         }
-    }
+    }.shareIn(
+        scope = repositoryScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        replay = 1
+    )
 
-    // Returns a single speed measurement snapshot
+    // All collectors receive the same speed emissions from the shared flow
+    override fun observeSpeed(): Flow<NetworkSpeed> = sharedSpeedFlow
+
+    // Returns a single snapshot of current speed for one-off queries
     override suspend fun getCurrentSpeed(): NetworkSpeed {
-        // Calculate current speed using native library
-        val (downloadSpeed, uploadSpeed) = nativeSpeedBridge.calculateSpeed()
-        // Get total byte counts
-        val (totalRx, totalTx) = nativeSpeedBridge.getTotalBytes()
-
-        // Return a single NetworkSpeed snapshot
+        val (downloadSpeed, uploadSpeed) = trafficStatsCalculator.calculateSpeed()
+        val (sessionRx, sessionTx) = trafficStatsCalculator.getSessionBytes()
         return NetworkSpeed(
             downloadSpeed = downloadSpeed,
             uploadSpeed = uploadSpeed,
-            totalRxBytes = totalRx,
-            totalTxBytes = totalTx
+            totalRxBytes = sessionRx,
+            totalTxBytes = sessionTx
         )
     }
 
-    // Resets the native calculator, clearing accumulated delta state
+    // Resets the calculator, clearing speed deltas and session byte tracking
     override fun resetCalculator() {
-        nativeSpeedBridge.reset()
+        trafficStatsCalculator.reset()
     }
 }

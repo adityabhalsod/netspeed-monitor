@@ -12,6 +12,7 @@ import com.netspeed.monitor.domain.usecase.ObserveNetworkSpeedUseCase
 import com.netspeed.monitor.service.SpeedMonitorService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -55,31 +56,43 @@ class HomeViewModel @Inject constructor(
             initialValue = false
         )
 
+    // Job reference for speed collection coroutine, cancelled when monitoring stops
+    private var speedCollectionJob: Job? = null
+
     init {
-        // Start collecting network speed when ViewModel is created
-        collectNetworkSpeed()
-        // Synchronize UI monitoring state with service preference
+        // Synchronize UI monitoring state and speed collection with service preference
         syncMonitoringState()
     }
 
-    // Subscribes to continuous network speed updates and updates UI state
-    private fun collectNetworkSpeed() {
+    // Observes service-enabled preference and starts/stops speed collection accordingly
+    private fun syncMonitoringState() {
         viewModelScope.launch {
-            // Observe speed only when monitoring is active
+            preferencesRepository.observeServiceEnabled().collect { enabled ->
+                _uiState.value = _uiState.value.copy(isMonitoring = enabled)
+                if (enabled) {
+                    startSpeedCollection()
+                } else {
+                    stopSpeedCollection()
+                }
+            }
+        }
+    }
+
+    // Starts collecting speed data from the shared flow when monitoring is active
+    private fun startSpeedCollection() {
+        speedCollectionJob?.cancel()
+        speedCollectionJob = viewModelScope.launch {
             observeNetworkSpeedUseCase().collect { speed ->
-                // Update the networkSpeed field in the current UI state
                 _uiState.value = _uiState.value.copy(networkSpeed = speed)
             }
         }
     }
 
-    // Syncs the isMonitoring flag in UI state with the persisted service-enabled preference
-    private fun syncMonitoringState() {
-        viewModelScope.launch {
-            preferencesRepository.observeServiceEnabled().collect { enabled ->
-                _uiState.value = _uiState.value.copy(isMonitoring = enabled)
-            }
-        }
+    // Stops speed collection and resets displayed speed to zero
+    private fun stopSpeedCollection() {
+        speedCollectionJob?.cancel()
+        speedCollectionJob = null
+        _uiState.value = _uiState.value.copy(networkSpeed = NetworkSpeed())
     }
 
     // Called when the user taps the toggle button to start/stop monitoring

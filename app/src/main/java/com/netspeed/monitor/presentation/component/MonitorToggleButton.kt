@@ -5,6 +5,9 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -20,49 +23,58 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.netspeed.monitor.presentation.theme.DownloadGreen
 import com.netspeed.monitor.presentation.theme.NetSpeedTheme
-import com.netspeed.monitor.presentation.theme.UploadOrange
 
-// Toggle button that starts or stops the network monitoring service
+// Modern toggle button to start or stop the network monitoring service
 @Composable
 fun MonitorToggleButton(
     modifier: Modifier = Modifier,
     // Current monitoring state: true = active, false = stopped
     isMonitoring: Boolean,
-    // Callback invoked when the button is clicked to toggle state
+    // Callback invoked when the button is clicked to toggle monitoring
     onToggle: () -> Unit
 ) {
-    // Animate background color transition between active and inactive states
-    val buttonColor by animateColorAsState(
-        targetValue = if (isMonitoring) UploadOrange else DownloadGreen,
+    // Animate button color: green for start action, red for stop action
+    val containerColor by animateColorAsState(
+        targetValue = if (isMonitoring) Color(0xFFE53935) else DownloadGreen,
         animationSpec = tween(durationMillis = 300),
         label = "toggleColor"
     )
 
     Button(
         onClick = onToggle,
-        modifier = modifier,
-        // Pill-shaped button for modern look
-        shape = RoundedCornerShape(50.dp),
-        // Use animated color for contextual feedback
-        colors = ButtonDefaults.buttonColors(containerColor = buttonColor),
-        contentPadding = PaddingValues(horizontal = 24.dp, vertical = 12.dp)
+        modifier = modifier.height(56.dp),
+        // Rounded rectangle for modern button shape
+        shape = RoundedCornerShape(16.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = containerColor,
+            contentColor = Color.White
+        ),
+        // Elevated shadow for depth effect
+        elevation = ButtonDefaults.buttonElevation(
+            defaultElevation = 6.dp,
+            pressedElevation = 2.dp
+        ),
+        contentPadding = PaddingValues(horizontal = 32.dp, vertical = 0.dp)
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            // Show play or pause icon based on current monitoring state
+            // Play or pause icon based on monitoring state
             Icon(
                 imageVector = if (isMonitoring) Icons.Default.Pause else Icons.Default.PlayArrow,
                 contentDescription = if (isMonitoring) "Stop monitoring" else "Start monitoring",
-                modifier = Modifier.size(20.dp)
+                modifier = Modifier.size(24.dp)
             )
-            Spacer(modifier = Modifier.width(8.dp))
-            // Label text for accessibility and clarity
+            Spacer(modifier = Modifier.width(12.dp))
+            // Descriptive button label
             Text(
-                text = if (isMonitoring) "Stop" else "Start",
-                style = MaterialTheme.typography.titleMedium
+                text = if (isMonitoring) "Stop Monitoring" else "Start Monitoring",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold
             )
         }
     }
@@ -72,7 +84,13 @@ fun MonitorToggleButton(
 @Composable
 private fun MonitorToggleButtonStartPreview() {
     NetSpeedTheme {
-        MonitorToggleButton(isMonitoring = false, onToggle = {})
+        MonitorToggleButton(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            isMonitoring = false,
+            onToggle = {}
+        )
     }
 }
 
@@ -80,6 +98,12 @@ private fun MonitorToggleButtonStartPreview() {
 @Composable
 private fun MonitorToggleButtonStopPreview() {
     NetSpeedTheme {
-        MonitorToggleButton(isMonitoring = true, onToggle = {})
+        MonitorToggleButton(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            isMonitoring = true,
+            onToggle = {}
+        )
     }
 }

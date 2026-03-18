@@ -15,28 +15,30 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
-// Dark color scheme with electric blue and speed-themed accents
+// Dark color scheme: deep navy with neon cyan accent and speed-themed highlights
 private val DarkColorScheme = darkColorScheme(
-    primary = PrimaryBlueDark,          // Electric blue for primary interactive elements
-    onPrimary = OnSurfaceDark,          // Text on primary surfaces
-    surface = SurfaceDark,              // Deep navy background for cards
-    surfaceVariant = SurfaceVariantDark, // Slightly lighter surface for distinction
-    onSurface = OnSurfaceDark,          // Primary text on dark surfaces
+    primary = AccentCyan,               // Vivid cyan for interactive elements
+    onPrimary = DarkBackground,         // Dark text on primary surfaces
+    surface = DarkSurface,              // Card and component background
+    surfaceVariant = DarkSurfaceVariant, // Elevated or grouped surfaces
+    onSurface = TextPrimary,            // Primary text on dark surfaces
     onSurfaceVariant = TextSecondary,   // Muted text for secondary info
-    background = GaugeBackground,       // Very dark background for gauge areas
-    onBackground = OnSurfaceDark,       // Text on background
-    secondary = DownloadGreen,          // Green for download speed accents
-    tertiary = UploadOrange             // Orange for upload speed accents
+    background = DarkBackground,        // App canvas background
+    onBackground = TextPrimary,         // Text on background
+    secondary = DownloadGreen,          // Green for download indicators
+    tertiary = UploadOrange             // Orange for upload indicators
 )
 
 // Light color scheme for users who prefer light mode
 private val LightColorScheme = lightColorScheme(
-    primary = PrimaryBlue,              // Deeper blue for light mode readability
-    onPrimary = OnSurfaceDark,          // White-ish text on primary
-    surface = SurfaceLight,             // Light grey-blue card background
-    onSurface = GaugeBackground,        // Dark text on light surfaces
-    background = OnSurfaceDark,         // Very light app background
-    onBackground = GaugeBackground,     // Dark text on light background
+    primary = PrimaryBlue,              // Standard blue for light mode
+    onPrimary = LightBackground,        // Light text on primary surfaces
+    surface = LightSurface,             // White card background
+    surfaceVariant = LightSurfaceVariant, // Light grey grouped surfaces
+    onSurface = LightTextPrimary,       // Dark text on light surfaces
+    onSurfaceVariant = LightTextSecondary, // Muted text on light surfaces
+    background = LightBackground,       // Very light app background
+    onBackground = LightTextPrimary,    // Dark text on light background
     secondary = DownloadGreen,          // Keep download indicator green
     tertiary = UploadOrange             // Keep upload indicator orange
 )
@@ -70,8 +72,8 @@ fun NetSpeedTheme(
     if (!view.isInEditMode) {
         SideEffect {
             val window = (view.context as Activity).window
-            // Set status bar background color to match primary color
-            window.statusBarColor = colorScheme.primary.toArgb()
+            // Set status bar background to match app's background color
+            window.statusBarColor = colorScheme.background.toArgb()
             // Set status bar icon appearance based on theme brightness
             WindowCompat.getInsetsController(window, view)
                 .isAppearanceLightStatusBars = !darkTheme

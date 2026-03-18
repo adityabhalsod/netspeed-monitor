@@ -106,9 +106,9 @@ fun HomeScreen(
                         )
                     }
                 },
-                // Match top app bar to the theme's primary color
+                // Match top app bar to the app background for seamless look
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surface
+                    containerColor = MaterialTheme.colorScheme.background
                 )
             )
         }

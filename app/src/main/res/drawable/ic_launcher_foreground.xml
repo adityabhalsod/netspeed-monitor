@@ -1,17 +1,27 @@
-<!-- Launcher icon: electric blue circle with lightning bolt for fast networking -->
+<!-- Modern app icon: dual arrows representing bidirectional network speed -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
 
-  <!-- Background circle: electric blue -->
-  <path
-      android:fillColor="#1565C0"
-      android:pathData="M54,54m-54,0a54,54 0,1 1,108 0a54,54 0,1 1,-108 0"/>
+    <!-- Base circle: brand blue background -->
+    <path
+        android:fillColor="#1976D2"
+        android:pathData="M54,54m-33,0a33,33 0,1 1,66 0a33,33 0,1 1,-66 0"/>
 
-  <!-- Lightning bolt: white, centered on the icon -->
-  <path
-      android:fillColor="#FFFFFF"
-      android:pathData="M42,20v33h9v35L75,54H66L75,20z"/>
+    <!-- Inner circle: darker blue for depth effect -->
+    <path
+        android:fillColor="#0D47A1"
+        android:pathData="M54,54m-27,0a27,27 0,1 1,54 0a27,27 0,1 1,-54 0"/>
+
+    <!-- Download arrow (pointing down, left side) in green -->
+    <path
+        android:fillColor="#69F0AE"
+        android:pathData="M40,38 L44,38 L44,52 L49,52 L42,62 L35,52 L40,52 Z"/>
+
+    <!-- Upload arrow (pointing up, right side) in amber -->
+    <path
+        android:fillColor="#FFD740"
+        android:pathData="M64,62 L68,62 L68,48 L73,48 L66,38 L59,48 L64,48 Z"/>
 </vector>

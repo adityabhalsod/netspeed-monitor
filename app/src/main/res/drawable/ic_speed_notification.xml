@@ -1,12 +1,16 @@
-<!-- Speed/network activity notification icon: lightning bolt representing fast speed -->
-<!-- Notification icons must be flat white — tint is applied by the system automatically -->
+<!-- Network speed notification icon: up/down arrows for bidirectional traffic -->
+<!-- White-only for system tinting in status bar -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="24dp"
     android:height="24dp"
     android:viewportWidth="24"
     android:viewportHeight="24">
-  <!-- Lightning bolt path for the notification icon (white for system tinting) -->
-  <path
-      android:fillColor="@android:color/white"
-      android:pathData="M7,2v11h3v9l7,-12h-4l4,-8z"/>
+    <!-- Upload arrow (top half) -->
+    <path
+        android:fillColor="@android:color/white"
+        android:pathData="M12,2 L16,7 L13,7 L13,11 L11,11 L11,7 L8,7 Z"/>
+    <!-- Download arrow (bottom half) -->
+    <path
+        android:fillColor="@android:color/white"
+        android:pathData="M12,22 L8,17 L11,17 L11,13 L13,13 L13,17 L16,17 Z"/>
 </vector>

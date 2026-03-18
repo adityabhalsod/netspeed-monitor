@@ -127,18 +127,17 @@ class SpeedMonitorService : Service() {
         notificationManager.notify(NOTIFICATION_ID, notification)
     }
 
-    // Builds a Notification with download and upload speed in the content area
+    // Builds a Notification with download and upload speed prominently displayed
     private fun buildNotification(downloadSpeed: String, uploadSpeed: String): Notification {
-        // Create a PendingIntent to open MainActivity when the notification is tapped
+        // PendingIntent to open MainActivity when the notification is tapped
         val pendingIntent = PendingIntent.getActivity(
             this,
             0,
             Intent(this, MainActivity::class.java),
-            // FLAG_IMMUTABLE required for Android 12+; FLAG_UPDATE_CURRENT for reuse
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
 
-        // Build the stop action intent; used for the notification action button
+        // Stop action intent for the notification action button
         val stopPendingIntent = PendingIntent.getService(
             this,
             1,
@@ -146,34 +145,35 @@ class SpeedMonitorService : Service() {
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
 
-        // Construct the notification using NotificationCompat for backward compatibility
+        // Build notification with live speed as the primary content
         return NotificationCompat.Builder(this, CHANNEL_ID)
-            // Small icon shown in status bar
             .setSmallIcon(R.drawable.ic_speed_notification)
-            // Primary line: download speed with arrow icon
-            .setContentTitle("↓ $downloadSpeed  ↑ $uploadSpeed")
-            // Secondary line: app label
-            .setContentText(getString(R.string.notification_monitoring))
-            // Tap to open the app
+            // Speed values as the main title for maximum visibility in collapsed view
+            .setContentTitle("↓ $downloadSpeed   ↑ $uploadSpeed")
+            .setContentText("Tap to open Net Speed Monitor")
+            // Subtext appears in the notification header area
+            .setSubText("Net Speed")
             .setContentIntent(pendingIntent)
-            // Cannot be dismissed by the user while service is running
             .setOngoing(true)
-            // Reduce interruption: no sound, no vibration for frequent updates
             .setSilent(true)
-            // No timestamp needed for a live monitoring notification
             .setShowWhen(false)
-            // Prioritize display in status bar
+            // Prevent re-alerting on each update
+            .setOnlyAlertOnce(true)
             .setPriority(NotificationCompat.PRIORITY_LOW)
-            // Add a stop action button to the notification
+            // Categorize as a running service notification
+            .setCategory(NotificationCompat.CATEGORY_SERVICE)
+            // Show notification immediately on Android 12+ (no delay)
+            .setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE)
             .addAction(
                 R.drawable.ic_stop,
                 getString(R.string.notification_stop),
                 stopPendingIntent
             )
-            // Expand to show speed details inline
+            // Expanded view shows detailed speed breakdown
             .setStyle(
                 NotificationCompat.BigTextStyle()
-                    .bigText("⬇ Download: $downloadSpeed\n⬆ Upload: $uploadSpeed")
+                    .setBigContentTitle("↓ $downloadSpeed   ↑ $uploadSpeed")
+                    .bigText("Download: $downloadSpeed\nUpload: $uploadSpeed")
             )
             .build()
     }

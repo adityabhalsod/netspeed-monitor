@@ -144,6 +144,9 @@ dependencies {
     // Coroutines for async programming
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.0") // Android-optimized coroutines
 
+    // Splash screen API for modern app launch experience
+    implementation("androidx.core:core-splashscreen:1.0.1") // SplashScreen backward-compatible API
+
     // Debug-only Compose tooling (layout inspector, previews)
     debugImplementation("androidx.compose.ui:ui-tooling")         // Compose UI tooling for debug
     debugImplementation("androidx.compose.ui:ui-test-manifest")   // Test manifest for Compose
