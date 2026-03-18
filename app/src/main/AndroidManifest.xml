@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Application manifest: declares components, permissions, and services -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Permission to access network state information -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <!-- Permission to run foreground services -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <!-- Foreground service type for data sync monitoring -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
+    <!-- Permission to receive boot completed broadcast for auto-start -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <!-- Permission to post notifications (required on Android 13+) -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <application
+        android:name=".NetSpeedApp"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.NetSpeedMonitor"
+        tools:targetApi="34">
+
+        <!-- Main Activity: entry point for the app with Compose UI -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:theme="@style/Theme.NetSpeedMonitor"
+            android:launchMode="singleTop">
+            <intent-filter>
+                <!-- Mark as launcher activity -->
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- Foreground service for persistent network speed monitoring -->
+        <service
+            android:name=".service.SpeedMonitorService"
+            android:exported="false"
+            android:foregroundServiceType="dataSync" />
+
+        <!-- Boot receiver: restarts the monitoring service after device reboot -->
+        <receiver
+            android:name=".receiver.BootReceiver"
+            android:exported="true"
+            android:enabled="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+            </intent-filter>
+        </receiver>
+
+    </application>
+
+</manifest>

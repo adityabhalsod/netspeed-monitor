@@ -1,0 +1,30 @@
+# NetSpeed Monitor – Android JNI App
+# Ignore build artifacts and local configuration
+
+## Android / Gradle build outputs
+.gradle/
+build/
+app/build/
+*.apk
+*.aab
+*.ap_
+
+## IDE files (Android Studio / IntelliJ)
+.idea/
+*.iml
+*.iws
+*.ipr
+local.properties
+
+## macOS filesystem metadata
+.DS_Store
+
+## CMake / NDK build artifacts
+.cxx/
+app/.cxx/
+
+## DataStore preference files (device-specific, not for source control)
+*.preferences_pb
+
+## Kotlin compiler output
+out/

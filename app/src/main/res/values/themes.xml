@@ -1,0 +1,6 @@
+<resources>
+    <!-- Base application theme: no action bar since Compose provides its own top bar -->
+    <style name="Theme.NetSpeedMonitor" parent="android:Theme.Material.Light.NoActionBar">
+        <!-- Status bar is controlled programmatically via Compose's SideEffect in Theme.kt -->
+    </style>
+</resources>

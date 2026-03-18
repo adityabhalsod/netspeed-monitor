@@ -1,0 +1,27 @@
+<resources>
+    <!-- Application name shown in launcher and task switcher -->
+    <string name="app_name">Net Speed Monitor</string>
+
+    <!-- Notification content text shown below the speed values -->
+    <string name="notification_monitoring">Monitoring network speed…</string>
+
+    <!-- Notification action button to stop monitoring -->
+    <string name="notification_stop">Stop</string>
+
+    <!-- Settings screen labels -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_start_on_boot">Start on Boot</string>
+    <string name="settings_start_on_boot_summary">Automatically start monitoring when device boots</string>
+    <string name="settings_show_download">Show Download Speed</string>
+    <string name="settings_show_upload">Show Upload Speed</string>
+    <string name="settings_update_interval">Update Interval</string>
+
+    <!-- Permission messages -->
+    <string name="permission_notification_rationale">Notification permission is needed to show live speed in the status bar.</string>
+
+    <!-- Speed unit labels -->
+    <string name="unit_bps">B/s</string>
+    <string name="unit_kbps">KB/s</string>
+    <string name="unit_mbps">MB/s</string>
+    <string name="unit_gbps">GB/s</string>
+</resources>
