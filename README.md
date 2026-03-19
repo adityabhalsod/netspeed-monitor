@@ -165,7 +165,7 @@ The app uses Android's `TrafficStats` API to read cumulative byte counters from 
 
 | Component | Technology |
 |---|---|
-| Language | Java 11 |
+| Language | Java 17 |
 | UI | Android `View` + Custom `Canvas` drawing |
 | Async | `java.util.Timer` + `android.os.Handler` |
 | Storage | `SharedPreferences` |
@@ -183,7 +183,7 @@ The app uses Android's `TrafficStats` API to read cumulative byte counters from 
 | Requirement | Version |
 |---|---|
 | Android Studio | Hedgehog (2023.1.1) or newer |
-| JDK | 11 or newer |
+| JDK | 17 or newer |
 | Gradle | 8.5 (via wrapper) |
 | Android Device / Emulator | API 26+ (Android 8.0+) |
 
@@ -244,7 +244,7 @@ adb shell am start -n com.netspeed.monitor/.MainActivity
 The project includes a GitHub Actions workflow ([`.github/workflows/release.yml`](.github/workflows/release.yml)) that:
 
 1. **Triggers** on push to `main`, `beta`, or `alpha` branches
-2. **Sets up** JDK 11 + Android SDK (no NDK required)
+2. **Sets up** JDK 17 + Android SDK (no NDK required)
 3. **Determines version** from `app/build.gradle.kts` `versionName`
 4. **Builds** a release APK with R8 optimization
 5. **Signs** using `KEYSTORE_BASE64` secret (or auto-generates a temporary keystore)
