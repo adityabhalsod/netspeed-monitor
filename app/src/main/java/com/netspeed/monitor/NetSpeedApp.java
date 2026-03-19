@@ -56,6 +56,8 @@ public class NetSpeedApp extends Application {
         channel.setDescription("Live network upload and download speed monitoring");
         channel.enableVibration(false);
         channel.setSound(null, null);
+        // Prevent the notification badge ("1") from appearing on the app icon
+        channel.setShowBadge(false);
 
         // Register the channel with the system
         NotificationManager nm = getSystemService(NotificationManager.class);

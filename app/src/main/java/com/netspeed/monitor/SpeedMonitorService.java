@@ -195,6 +195,8 @@ public class SpeedMonitorService extends Service {
                 .setOnlyAlertOnce(true)
                 .setShowWhen(false)
                 .setCategory(Notification.CATEGORY_SERVICE)
+                .setBadgeIconType(Notification.BADGE_ICON_NONE)
+                .setNumber(0)
                 .addAction(new Notification.Action.Builder(
                         Icon.createWithResource(this, R.drawable.ic_stop),
                         getString(R.string.notification_stop),
