@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Grey-tinted pill background for "Stopped" status indicator -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="#1A888888" />
+    <corners android:radius="20dp" />
+</shape>

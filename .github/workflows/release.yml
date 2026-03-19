@@ -12,10 +12,9 @@
 #   alpha → alpha pre-release (v1.0.0-alpha.1, v1.0.0-alpha.2, …)
 #
 # Build requirements:
-#   - JDK 17 (Kotlin 1.9 + AGP 8.3 requirement)
-#   - NDK 27.1.12297006 (C++ native speed calculator)
-#   - CMake 3.22.1 (native build system)
+#   - JDK 11 (pure Java 11 project, no Kotlin)
 #   - Gradle 8.5 via wrapper
+#   - Zero native dependencies (no NDK, no CMake)
 # ============================================================================
 
 name: Android Release
@@ -37,14 +36,13 @@ permissions:
   contents: write
 
 env:
-  JAVA_VERSION: "17"
-  NDK_VERSION: "27.1.12297006"
+  JAVA_VERSION: "11"
   # Gradle performance flags for CI
   GRADLE_OPTS: >-
     -Dorg.gradle.daemon=true
     -Dorg.gradle.parallel=true
     -Dorg.gradle.workers.max=4
-    -Dorg.gradle.jvmargs=-Xmx4g -XX:+HeapDumpOnOutOfMemoryError -XX:+UseParallelGC
+    -Dorg.gradle.jvmargs=-Xmx2g -XX:+UseParallelGC
     -Dorg.gradle.configureondemand=true
     -Dorg.gradle.vfs.watch=false
 
@@ -52,7 +50,7 @@ jobs:
   build-and-release:
     name: Build & Release (${{ github.ref_name }})
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 15
     # Skip when commit message contains [skip ci] or [ci skip]
     if: |
       !contains(github.event.head_commit.message, '[skip ci]') &&
@@ -72,13 +70,9 @@ jobs:
           distribution: "temurin"
           java-version: ${{ env.JAVA_VERSION }}
 
-      # ── Setup Android SDK + NDK + CMake ───────────────────────────────
+      # ── Setup Android SDK ─────────────────────────────────────────────
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
-
-      - name: Install NDK and CMake
-        run: |
-          sdkmanager --install "ndk;${{ env.NDK_VERSION }}" "cmake;3.22.1"
 
       # ── Cache Gradle wrapper & dependencies ───────────────────────────
       - name: Cache Gradle dependencies

@@ -1,11 +1,5 @@
-// Root project build script: applies top-level plugins without applying them to the root project itself
+// Root project build script: only the Android Application plugin is needed (no Kotlin, Hilt, or KSP)
 plugins {
-    // Android Application plugin, versioned but not applied at root level
+    // Android Application plugin — the only required plugin for this pure-Java project
     id("com.android.application") version "8.3.0" apply false
-    // Kotlin Android plugin for Kotlin support (1.9.x — composeOptions used instead of plugin.compose)
-    id("org.jetbrains.kotlin.android") version "1.9.22" apply false
-    // Hilt Android plugin for dependency injection
-    id("com.google.dagger.hilt.android") version "2.51" apply false
-    // Kotlin Symbol Processing (KSP) for annotation processing
-    id("com.google.devtools.ksp") version "1.9.22-1.0.17" apply false
 }

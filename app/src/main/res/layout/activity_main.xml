@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Main activity layout: speed gauges, session usage, and monitoring toggle -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#FAFAFA">
+
+    <!-- Top bar with app title and settings button -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="8dp"
+        android:background="@android:color/white"
+        android:elevation="2dp">
+
+        <!-- App title -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:text="@string/app_name"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="#212121" />
+
+        <!-- Settings gear button -->
+        <ImageButton
+            android:id="@+id/btn_settings"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/ic_settings"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/settings_title"
+            android:scaleType="center" />
+    </RelativeLayout>
+
+    <!-- Scrollable content area -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- Status indicator pill (Monitoring/Stopped) -->
+            <TextView
+                android:id="@+id/tv_status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="Stopped"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:textColor="#888888"
+                android:background="@drawable/bg_status_stopped"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:paddingTop="6dp"
+                android:paddingBottom="6dp"
+                android:layout_marginBottom="16dp" />
+
+            <!-- Speed gauges card: download and upload side by side -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_card"
+                android:elevation="4dp"
+                android:paddingTop="24dp"
+                android:paddingBottom="16dp"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:layout_marginBottom="16dp">
+
+                <!-- Download speed gauge -->
+                <com.netspeed.monitor.SpeedGaugeView
+                    android:id="@+id/gauge_download"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+
+                <!-- Upload speed gauge -->
+                <com.netspeed.monitor.SpeedGaugeView
+                    android:id="@+id/gauge_upload"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+            </LinearLayout>
+
+            <!-- Session usage card -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_card"
+                android:elevation="4dp"
+                android:padding="20dp"
+                android:orientation="vertical"
+                android:layout_marginBottom="24dp">
+
+                <!-- Card title -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Session Usage"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="#212121"
+                    android:layout_marginBottom="16dp" />
+
+                <!-- Download usage row -->
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_centerVertical="true"
+                        android:text="\u2193 Downloaded"
+                        android:textSize="14sp"
+                        android:textColor="#00E676" />
+
+                    <TextView
+                        android:id="@+id/tv_session_rx"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:text="0 B"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:textColor="#212121" />
+                </RelativeLayout>
+
+                <!-- Upload usage row -->
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_centerVertical="true"
+                        android:text="\u2191 Uploaded"
+                        android:textSize="14sp"
+                        android:textColor="#FF9100" />
+
+                    <TextView
+                        android:id="@+id/tv_session_tx"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:text="0 B"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:textColor="#212121" />
+                </RelativeLayout>
+            </LinearLayout>
+
+            <!-- Monitoring toggle button -->
+            <Button
+                android:id="@+id/btn_toggle"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:text="\u25B6  Start Monitoring"
+                android:textColor="@android:color/white"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textAllCaps="false"
+                android:background="@drawable/bg_button_start"
+                android:elevation="6dp"
+                android:stateListAnimator="@null" />
+
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>
