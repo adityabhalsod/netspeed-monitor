@@ -1,33 +1,18 @@
-# Add project specific ProGuard rules here.
+# ============================================================
+# Ultra-lightweight ProGuard/R8 rules for pure Java Android app
+# No Kotlin, no AndroidX, no third-party libraries to worry about
+# ============================================================
 
-# ===== Hilt / Dagger =====
-# Keep all classes annotated with Hilt/Dagger annotations
--keep class dagger.hilt.** { *; }
--keep @dagger.hilt.android.lifecycle.HiltViewModel class * { *; }
--keep @dagger.hilt.android.AndroidEntryPoint class * { *; }
+# Maximum optimization passes for smallest possible output
+-optimizationpasses 5
+-allowaccessmodification
+-repackageclasses ''
 
-# ===== Kotlin Coroutines =====
-# Retain coroutine debug information
--keepnames class kotlinx.coroutines.internal.MainDispatcherFactory {}
--keepnames class kotlinx.coroutines.CoroutineExceptionHandler {}
+# Keep custom View referenced in XML layouts
+-keep class com.netspeed.monitor.SpeedGaugeView { *; }
 
-# ===== DataStore =====
-# Prevent stripping of DataStore preference keys
--keep class androidx.datastore.** { *; }
+# Keep the SpeedCallback interface used across classes
+-keep interface com.netspeed.monitor.SpeedMonitorService$SpeedCallback { *; }
 
-# ===== JNI / Native bridge =====
-# Keep the NativeSpeedBridge class and all its native external methods
-# so JNI registration works correctly at runtime
--keep class com.netspeed.monitor.data.native_.NativeSpeedBridge { *; }
-
-# ===== Android Components =====
-# Keep the Application, Activity, Service and BroadcastReceiver classes used by the manifest
--keep class com.netspeed.monitor.NetSpeedApp { *; }
--keep class com.netspeed.monitor.MainActivity { *; }
--keep class com.netspeed.monitor.service.SpeedMonitorService { *; }
--keep class com.netspeed.monitor.receiver.BootReceiver { *; }
-
-# ===== Kotlin =====
-# Suppress warning for Kotlin intrinsics
--dontwarn kotlin.Unit
--dontwarn kotlin.reflect.**
+# Remove unused code aggressively
+-dontwarn javax.annotation.**

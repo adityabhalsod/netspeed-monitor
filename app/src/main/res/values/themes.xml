@@ -1,16 +1,9 @@
 <resources>
-    <!-- Base application theme: no action bar since Compose provides its own top bar -->
+    <!-- Base application theme: lightweight Material Light with no action bar -->
     <style name="Theme.NetSpeedMonitor" parent="android:Theme.Material.Light.NoActionBar">
-        <!-- Status bar is controlled programmatically via Compose's SideEffect in Theme.kt -->
-    </style>
-
-    <!-- Splash screen theme: shown during cold start before Compose renders -->
-    <style name="Theme.NetSpeedMonitor.Splash" parent="Theme.SplashScreen">
-        <!-- Dark background matching the app's primary dark theme -->
-        <item name="windowSplashScreenBackground">@color/splash_background</item>
-        <!-- App icon displayed in the center of the splash screen -->
-        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
-        <!-- Transition to the base theme after splash completes -->
-        <item name="postSplashScreenTheme">@style/Theme.NetSpeedMonitor</item>
+        <!-- Light grey status bar matching the top bar -->
+        <item name="android:statusBarColor">#FAFAFA</item>
+        <!-- Dark status bar icons for light background -->
+        <item name="android:windowLightStatusBar">true</item>
     </style>
 </resources>

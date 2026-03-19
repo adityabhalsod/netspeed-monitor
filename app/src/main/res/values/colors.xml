@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Splash screen background color matching the app's dark theme -->
-    <color name="splash_background">#0A0E21</color>
+    <!-- Download speed indicator color: bright green -->
+    <color name="download_green">#00E676</color>
+    <!-- Upload speed indicator color: bright orange -->
+    <color name="upload_orange">#FF9100</color>
+    <!-- App background -->
+    <color name="background">#FAFAFA</color>
 </resources>
