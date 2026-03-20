@@ -7,12 +7,12 @@ Real-time upload & download speed — right in your status bar, every second.
 
 ![Android](https://img.shields.io/badge/Platform-Android%208.0%2B-3DDC84?logo=android&logoColor=white)
 ![Java](https://img.shields.io/badge/Language-Java%2011-ED8B00?logo=openjdk&logoColor=white)
-![APK Size](https://img.shields.io/badge/APK%20Size-~22%20KB-brightgreen)
+![APK Size](https://img.shields.io/badge/APK%20Size-~25%20KB-brightgreen)
 ![Dependencies](https://img.shields.io/badge/Dependencies-Zero-blue)
 ![License](https://img.shields.io/badge/License-MIT-blue)
 ![Min SDK](https://img.shields.io/badge/Min%20SDK-26%20(Android%208.0)-green)
 
-**~22 KB release APK · Zero dependencies · Pure Android SDK**
+**~25 KB release APK · Zero dependencies · Pure Android SDK**
 
 </div>
 
@@ -43,7 +43,7 @@ The app is designed to be **minimal, fast, and battery-friendly**. It uses no ad
 | 🔋 Battery friendly | Reads kernel byte counters — no packet inspection |
 | 📶 All interfaces | Tracks Wi-Fi, mobile data, ethernet — all at once |
 | 🔁 Start on boot | Auto-restarts monitoring after device reboot |
-| 📦 Tiny footprint | ~22 KB release APK with R8 optimization |
+| 📦 Tiny footprint | ~25 KB release APK with R8 optimization |
 | 🚫 No dependencies | Zero libraries — only Android SDK classes |
 
 ---
@@ -89,12 +89,12 @@ netspeed-monitor/
 
 ```
 ┌─────────────────────────────────────────────────────┐
-│                    NetSpeedApp                       │
-│          (Application, notification channel)         │
+│                    NetSpeedApp                      │
+│          (Application, notification channel)        │
 └───────────┬─────────────────────┬───────────────────┘
             │                     │
             ▼                     ▼
-┌───────────────────┐   ┌────────────────────┐
+┌───────────────────┐   ┌─────────────────────┐
 │   MainActivity    │   │ SpeedMonitorService │
 │  (Dashboard UI)   │   │ (Foreground Service)│
 │                   │   │                     │
@@ -174,7 +174,7 @@ The app uses Android's `TrafficStats` API to read cumulative byte counters from 
 | Min SDK | API 26 (Android 8.0) |
 | Target SDK | API 34 (Android 14) |
 | Dependencies | **Zero** — only Android SDK |
-| Release APK | **~22 KB** |
+| Release APK | **~25 KB** |
 
 ---
 
@@ -274,7 +274,7 @@ If no keystore secret is configured, the workflow auto-generates a temporary one
 
 ## 📦 APK Size Breakdown
 
-The release APK is approximately **22 KB** thanks to:
+The release APK is approximately **25 KB** thanks to:
 
 - **Pure Java** — no Kotlin stdlib (~800 KB saved)
 - **No AndroidX** — no AppCompat, Material, or Compose libraries (~5-15 MB saved)
@@ -310,6 +310,6 @@ This project is licensed under the **MIT License** — see [LICENSE](LICENSE) fo
 
 <div align="center">
 
-Made with ❤️ · Pure Java · Android SDK · ~22 KB
+Made with ❤️ · Pure Java · Android SDK · ~25 KB
 
 </div>
