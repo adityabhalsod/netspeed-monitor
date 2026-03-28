@@ -9,13 +9,13 @@ Real-time upload & download speed in your status bar — updated every second.
 
 [![Android](https://img.shields.io/badge/Platform-Android%208.0%2B-3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://developer.android.com)
 [![Java](https://img.shields.io/badge/Language-Java%2017-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)](https://openjdk.org)
-[![APK Size](https://img.shields.io/badge/APK%20Size-~180%20KB-brightgreen?style=for-the-badge)](https://github.com/adityabhalsod/netspeed-monitor/releases)
+[![APK Size](https://img.shields.io/badge/APK%20Size-~182%20KB-brightgreen?style=for-the-badge)](https://github.com/adityabhalsod/netspeed-monitor/releases)
 [![Dependencies](https://img.shields.io/badge/Dependencies-Zero-blue?style=for-the-badge)](#-tech-stack)
 [![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](LICENSE)
 [![Release](https://img.shields.io/github/v/release/adityabhalsod/netspeed-monitor?style=for-the-badge&color=orange)](https://github.com/adityabhalsod/netspeed-monitor/releases/latest)
 [![CI](https://img.shields.io/github/actions/workflow/status/adityabhalsod/netspeed-monitor/release.yml?branch=main&style=for-the-badge&label=CI&logo=github)](https://github.com/adityabhalsod/netspeed-monitor/actions)
 
-**~180 KB release APK · Zero dependencies · Pure Android SDK · No ads · No tracking**
+**~182 KB release APK · Zero dependencies · Pure Android SDK · No ads · No tracking**
 
 [Download APK](https://github.com/adityabhalsod/netspeed-monitor/releases/latest) · [Report Bug](https://github.com/adityabhalsod/netspeed-monitor/issues/new?template=bug_report.md) · [Request Feature](https://github.com/adityabhalsod/netspeed-monitor/issues/new?template=feature_request.md)
 
@@ -77,7 +77,7 @@ Real-time upload & download speed in your status bar — updated every second.
 | 📶 **All interfaces** | Tracks WiFi, mobile data, ethernet — all at once |
 | 🔁 **Start on boot** | `BootReceiver` auto-restarts monitoring after device reboot |
 | 🔐 **Runtime permissions** | Smart permission flow with warning banners and one-tap grant |
-| 📦 **Tiny footprint** | ~180 KB release APK with R8 aggressive optimization |
+| 📦 **Tiny footprint** | ~182 KB release APK with R8 aggressive optimization |
 | 🚫 **No dependencies** | Zero libraries — only Android SDK classes |
 | 🎯 **Sliding window** | 1-second sliding window averages smooth out speed fluctuations |
 
@@ -362,7 +362,7 @@ This app respects your privacy completely:
 | **Min SDK** | API 26 (Android 8.0 Oreo) |
 | **Target SDK** | API 34 (Android 14) |
 | **Dependencies** | **Zero** — only `android.jar` from the Android SDK |
-| **Release APK** | **~180 KB** |
+| **Release APK** | **~182 KB** |
 
 ### Why Zero Dependencies?
 
@@ -375,7 +375,7 @@ This app respects your privacy completely:
 | Hilt / Dagger | ~500 KB | Manual singletons |
 | Room / SQLite | ~500 KB | `SharedPreferences` |
 | OkHttp / Retrofit | ~800 KB | Not needed (no network calls) |
-| **Total saved** | **~11-14 MB** | **~180 KB APK** |
+| **Total saved** | **~11-14 MB** | **~182 KB APK** |
 
 ---
 
@@ -576,7 +576,7 @@ The workflow uses `concurrency.group` per branch — pushing again while a relea
 
 ## 📦 APK Size Breakdown
 
-The release APK is approximately **~180 KB** — smaller than most app icons.
+The release APK is approximately **~182 KB** — smaller than most app icons.
 
 ### What's Inside
 
@@ -784,7 +784,7 @@ copies of the Software...
 
 **[⬆ Back to Top](#-net-speed-monitor)**
 
-Made with ❤️ by [Aditya](https://github.com/adityabhalsod) · Pure Java · Android SDK · ~180 KB
+Made with ❤️ by [Aditya](https://github.com/adityabhalsod) · Pure Java · Android SDK · ~182 KB
 
 [![GitHub stars](https://img.shields.io/github/stars/adityabhalsod/netspeed-monitor?style=social)](https://github.com/adityabhalsod/netspeed-monitor/stargazers)
 [![GitHub forks](https://img.shields.io/github/forks/adityabhalsod/netspeed-monitor?style=social)](https://github.com/adityabhalsod/netspeed-monitor/network/members)
