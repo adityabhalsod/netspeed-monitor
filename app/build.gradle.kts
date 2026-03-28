@@ -18,7 +18,7 @@ android {
         // Target latest SDK for best behavior and security
         targetSdk = 34
         // Application version code for updates
-        versionCode = 1
+        versionCode = 26
         // Human-readable version name
         versionName = "1.0.0"
     }

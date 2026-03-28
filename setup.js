@@ -3,10 +3,11 @@
  * setup.js — build, run, and project setup helper for Net Speed Monitor
  *
  * Usage:
- *   node setup.js init     → generate local.properties from device.ini
- *   node setup.js build    → assemble debug APK
- *   node setup.js run      → install + launch on connected device
- *   node setup.js deploy   → build + install + launch (full pipeline)
+ *   node setup.js init       → generate local.properties from device.ini
+ *   node setup.js build      → assemble debug APK
+ *   node setup.js run        → install + launch on connected device
+ *   node setup.js deploy     → build + install + launch (full pipeline)
+ *   node setup.js uninstall  → uninstall app from device
  *
  * Configuration is read from device.ini (see device.ini.example).
  */
@@ -207,6 +208,18 @@ function runOnDevice() {
 }
 
 /**
+ * Uninstall the app from the connected device.
+ */
+function uninstall() {
+  const config = loadDeviceConfig();
+  const serial = connectDevice(config);
+  const adb = `adb -s ${serial}`;
+
+  run(`${adb} uninstall ${APP_PACKAGE}`, `Uninstall ${APP_PACKAGE}`);
+  console.log(`\n\x1b[32m✔  App uninstalled from device ${serial}\x1b[0m\n`);
+}
+
+/**
  * Full pipeline: init → build → install → launch.
  */
 function deploy() {
@@ -230,15 +243,16 @@ function ensureLocalProperties() {
 // ─── entry point ─────────────────────────────────────────────────────────────
 
 const command = process.argv[2];
-const commands = { init, build, run: runOnDevice, deploy };
+const commands = { init, build, run: runOnDevice, deploy, uninstall };
 
 if (!command || !commands[command]) {
   console.log(
     "\n\x1b[1mNet Speed Monitor — setup helper\x1b[0m\n\n" +
-      "  \x1b[36mnode setup.js init\x1b[0m      Generate local.properties from device.ini\n" +
-      "  \x1b[36mnode setup.js build\x1b[0m     Compile & produce debug APK\n" +
-      "  \x1b[36mnode setup.js run\x1b[0m       Install APK on device + launch app\n" +
-      "  \x1b[36mnode setup.js deploy\x1b[0m    Build + install + launch (full pipeline)\n"
+      "  \x1b[36mnode setup.js init\x1b[0m        Generate local.properties from device.ini\n" +
+      "  \x1b[36mnode setup.js build\x1b[0m       Compile & produce debug APK\n" +
+      "  \x1b[36mnode setup.js run\x1b[0m         Install APK on device + launch app\n" +
+      "  \x1b[36mnode setup.js deploy\x1b[0m      Build + install + launch (full pipeline)\n" +
+      "  \x1b[36mnode setup.js uninstall\x1b[0m   Uninstall app from device\n"
   );
   process.exit(0);
 }
