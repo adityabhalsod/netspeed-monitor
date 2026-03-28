@@ -385,9 +385,14 @@ public class MainActivity extends Activity implements SpeedMonitorService.SpeedC
 
     /**
      * Syncs all UI elements with the current monitoring state.
+     * Uses SharedPreferences as the source of truth because
+     * SpeedMonitorService.isRunning() may return false briefly
+     * after startForegroundService() before onStartCommand fires.
      */
     private void updateUiState() {
-        applyUiState(SpeedMonitorService.isRunning());
+        boolean serviceEnabled = prefs.getBoolean("service_enabled", false);
+        // Trust the local flag OR the actual service state
+        applyUiState(serviceEnabled || SpeedMonitorService.isRunning());
     }
 
     /**
