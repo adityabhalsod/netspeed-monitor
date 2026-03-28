@@ -14,5 +14,9 @@
 # Keep the SpeedCallback interface used across classes
 -keep interface com.netspeed.monitor.SpeedMonitorService$SpeedCallback { *; }
 
+# Keep inner data classes used by AppUsageTracker and DataUsageReport
+-keep class com.netspeed.monitor.AppUsageTracker$AppUsageInfo { *; }
+-keep class com.netspeed.monitor.DataUsageReport$DailyUsage { *; }
+
 # Remove unused code aggressively
 -dontwarn javax.annotation.**

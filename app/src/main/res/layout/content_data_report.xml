@@ -1,0 +1,316 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Tab 3: Monthly data usage report with daily breakdown -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#FAFAFA">
+
+    <!-- Month navigation bar: previous / current month / next -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:background="@android:color/white"
+        android:elevation="2dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp">
+
+        <!-- Navigate to previous month -->
+        <ImageButton
+            android:id="@+id/btn_prev_month"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:src="@drawable/ic_back"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Previous month"
+            android:scaleType="center" />
+
+        <!-- Current month and year label -->
+        <TextView
+            android:id="@+id/tv_month_label"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="March 2026"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#212121"
+            android:gravity="center" />
+
+        <!-- Navigate to next month -->
+        <ImageButton
+            android:id="@+id/btn_next_month"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:src="@drawable/ic_back"
+            android:rotation="180"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Next month"
+            android:scaleType="center" />
+    </LinearLayout>
+
+    <!-- Monthly total summary card -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_card"
+        android:elevation="4dp"
+        android:clipToOutline="true"
+        android:outlineProvider="background"
+        android:padding="16dp"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_margin="12dp">
+
+        <!-- WiFi total column -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="WiFi"
+                android:textSize="12sp"
+                android:textColor="#888888"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tv_total_wifi"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0 B"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="#4CAF50"
+                android:layout_marginTop="4dp" />
+        </LinearLayout>
+
+        <!-- Divider between WiFi and Mobile -->
+        <View
+            android:layout_width="1dp"
+            android:layout_height="40dp"
+            android:background="#E0E0E0" />
+
+        <!-- Mobile total column -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Mobile"
+                android:textSize="12sp"
+                android:textColor="#888888"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tv_total_mobile"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0 B"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="#FF9800"
+                android:layout_marginTop="4dp" />
+        </LinearLayout>
+
+        <!-- Divider between Mobile and Total -->
+        <View
+            android:layout_width="1dp"
+            android:layout_height="40dp"
+            android:background="#E0E0E0" />
+
+        <!-- Combined total column -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Total"
+                android:textSize="12sp"
+                android:textColor="#888888"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tv_total_all"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0 B"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="#2196F3"
+                android:layout_marginTop="4dp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Column headers for the daily list -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="36dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:background="#F0F0F0">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:text="Date"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:textColor="#888888" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="WiFi"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:textColor="#4CAF50"
+            android:gravity="end" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Mobile"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:textColor="#FF9800"
+            android:gravity="end" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Total"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:textColor="#2196F3"
+            android:gravity="end" />
+    </LinearLayout>
+
+    <!-- Permission prompt: shown if PACKAGE_USAGE_STATS not granted -->
+    <LinearLayout
+        android:id="@+id/report_permission_prompt"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="32dp"
+        android:visibility="gone">
+
+        <!-- Lock icon indicator -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="\uD83D\uDD12"
+            android:textSize="48sp"
+            android:layout_marginBottom="16dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Usage Access Required"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="#212121"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Step-by-step guide for granting permission -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_card"
+            android:clipToOutline="true"
+            android:outlineProvider="background"
+            android:orientation="vertical"
+            android:padding="20dp"
+            android:layout_marginBottom="24dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Follow these steps:"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="#212121"
+                android:layout_marginBottom="12dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="1. Tap the button below to open Settings"
+                android:textSize="14sp"
+                android:textColor="#424242"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text='2. Find \"Net Speed Monitor\" in the list'
+                android:textSize="14sp"
+                android:textColor="#424242"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="3. Tap on it and toggle the switch ON"
+                android:textSize="14sp"
+                android:textColor="#424242"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="4. Come back to this app \u2014 data will load automatically"
+                android:textSize="14sp"
+                android:textColor="#424242" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btn_report_grant"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:text="\u2192  Open Usage Access Settings"
+            android:textColor="@android:color/white"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:textAllCaps="false"
+            android:background="@drawable/bg_button_start"
+            android:stateListAnimator="@null" />
+    </LinearLayout>
+
+    <!-- Scrollable daily usage list -->
+    <ScrollView
+        android:id="@+id/report_list_scroll"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:id="@+id/report_list_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+    </ScrollView>
+
+</LinearLayout>

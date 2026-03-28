@@ -52,6 +52,8 @@
             android:layout_height="wrap_content"
             android:background="@drawable/bg_card"
             android:elevation="2dp"
+            android:clipToOutline="true"
+            android:outlineProvider="background"
             android:padding="16dp"
             android:gravity="center_vertical">
 

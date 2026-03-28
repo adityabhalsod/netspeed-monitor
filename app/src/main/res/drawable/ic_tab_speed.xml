@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Speed gauge icon for Tab 1 (speed monitor tab) -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!-- Speedometer arc -->
+    <path
+        android:pathData="M12,4C7.58,4 4,7.58 4,12c0,2.21 0.9,4.21 2.34,5.66l1.42,-1.42C6.68,15.16 6,13.66 6,12c0,-3.31 2.69,-6 6,-6s6,2.69 6,6c0,1.66 -0.68,3.16 -1.76,4.24l1.42,1.42C19.1,16.21 20,14.21 20,12c0,-4.42 -3.58,-8 -8,-8z"
+        android:fillColor="#212121" />
+    <!-- Needle pointer -->
+    <path
+        android:pathData="M12,12m-2,0a2,2 0,1 1,4 0a2,2 0,1 1,-4 0"
+        android:fillColor="#212121" />
+    <path
+        android:pathData="M12,12L16,8"
+        android:strokeWidth="2"
+        android:strokeColor="#212121"
+        android:strokeLineCap="round" />
+</vector>

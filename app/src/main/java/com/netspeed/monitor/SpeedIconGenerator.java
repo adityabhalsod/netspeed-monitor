@@ -9,7 +9,8 @@ import android.graphics.Typeface;
 
 /**
  * Generates bitmap icons for the status bar notification.
- * Renders compact speed text onto a small bitmap for dynamic notification icons.
+ * Renders compact speed text onto a reusable bitmap for dynamic notification icons.
+ * Uses static Paint/Bitmap objects to minimize allocations at high update rates.
  */
 public final class SpeedIconGenerator {
 
@@ -29,58 +30,76 @@ public final class SpeedIconGenerator {
     // Tighter letter spacing for compact rendering
     private static final float LETTER_SPACING = -0.05f;
 
+    // Reusable bitmap — cleared and redrawn each call to avoid GC pressure
+    private static Bitmap reusableBitmap;
+    // Canvas attached to the reusable bitmap
+    private static Canvas reusableCanvas;
+
+    // Pre-allocated Paint for the large speed value number
+    private static final Paint VALUE_PAINT = new Paint(Paint.ANTI_ALIAS_FLAG);
+    // Pre-allocated Paint for the smaller unit label
+    private static final Paint UNIT_PAINT = new Paint(Paint.ANTI_ALIAS_FLAG);
+    // Reusable Rect objects for text measurement to avoid per-call allocation
+    private static final Rect VALUE_BOUNDS = new Rect();
+    private static final Rect UNIT_BOUNDS = new Rect();
+
+    // Static initializer configures paints once at class load time
+    static {
+        Typeface typeface = Typeface.create("sans-serif-condensed", Typeface.BOLD);
+
+        // Configure value paint — large bold number
+        VALUE_PAINT.setColor(Color.WHITE);
+        VALUE_PAINT.setTypeface(typeface);
+        VALUE_PAINT.setTextAlign(Paint.Align.CENTER);
+        VALUE_PAINT.setTextSize(VALUE_TEXT_SIZE);
+        VALUE_PAINT.setLetterSpacing(LETTER_SPACING);
+
+        // Configure unit paint — smaller unit label
+        UNIT_PAINT.setColor(Color.WHITE);
+        UNIT_PAINT.setTypeface(typeface);
+        UNIT_PAINT.setTextAlign(Paint.Align.CENTER);
+        UNIT_PAINT.setTextSize(UNIT_TEXT_SIZE);
+        UNIT_PAINT.setLetterSpacing(LETTER_SPACING);
+    }
+
     /**
      * Creates a bitmap icon showing the download speed.
-     * The icon serves as the notification small icon in the status bar.
+     * Reuses a single bitmap and pre-allocated paints to stay efficient at 100ms update rates.
      */
     public static Bitmap createSpeedIcon(double downloadSpeed) {
-        // Create transparent bitmap canvas
-        Bitmap bitmap = Bitmap.createBitmap(SIZE, SIZE, Bitmap.Config.ALPHA_8);
-        Canvas canvas = new Canvas(bitmap);
+        // Lazily create the reusable bitmap and canvas on first call
+        if (reusableBitmap == null) {
+            reusableBitmap = Bitmap.createBitmap(SIZE, SIZE, Bitmap.Config.ALPHA_8);
+            reusableCanvas = new Canvas(reusableBitmap);
+        }
+
+        // Clear previous drawing — erase to transparent
+        reusableBitmap.eraseColor(Color.TRANSPARENT);
 
         // Format speed into compact value + unit pair
         String[] formatted = SpeedUtils.formatSpeedCompact(downloadSpeed);
         String value = formatted[0];
         String unit = formatted[1];
 
-        // Configure condensed bold typeface for maximum readability at small sizes
-        Typeface typeface = Typeface.create("sans-serif-condensed", Typeface.BOLD);
+        // Center X coordinate on the canvas
         float cx = SIZE / 2f;
 
-        // Paint for the large speed value number
-        Paint valuePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        valuePaint.setColor(Color.WHITE);
-        valuePaint.setTypeface(typeface);
-        valuePaint.setTextAlign(Paint.Align.CENTER);
-        valuePaint.setTextSize(VALUE_TEXT_SIZE);
-        valuePaint.setLetterSpacing(LETTER_SPACING);
-
-        // Paint for the smaller unit label
-        Paint unitPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        unitPaint.setColor(Color.WHITE);
-        unitPaint.setTypeface(typeface);
-        unitPaint.setTextAlign(Paint.Align.CENTER);
-        unitPaint.setTextSize(UNIT_TEXT_SIZE);
-        unitPaint.setLetterSpacing(LETTER_SPACING);
-
         // Measure text bounds to center both lines vertically
-        Rect valueBounds = new Rect();
-        valuePaint.getTextBounds(value, 0, value.length(), valueBounds);
-        Rect unitBounds = new Rect();
-        unitPaint.getTextBounds(unit, 0, unit.length(), unitBounds);
+        VALUE_PAINT.getTextBounds(value, 0, value.length(), VALUE_BOUNDS);
+        UNIT_PAINT.getTextBounds(unit, 0, unit.length(), UNIT_BOUNDS);
 
         // Calculate vertical positions to center text block on canvas
-        float totalHeight = valueBounds.height() + LINE_GAP + unitBounds.height();
+        float totalHeight = VALUE_BOUNDS.height() + LINE_GAP + UNIT_BOUNDS.height();
         float startY = (SIZE - totalHeight) / 2f;
 
         // Draw value text on the top line
-        float valueY = startY + valueBounds.height();
-        canvas.drawText(value, cx, valueY, valuePaint);
+        float valueY = startY + VALUE_BOUNDS.height();
+        reusableCanvas.drawText(value, cx, valueY, VALUE_PAINT);
 
         // Draw unit text on the bottom line
-        float unitY = valueY + LINE_GAP + unitBounds.height();
-        canvas.drawText(unit, cx, unitY, unitPaint);
+        float unitY = valueY + LINE_GAP + UNIT_BOUNDS.height();
+        reusableCanvas.drawText(unit, cx, unitY, UNIT_PAINT);
 
-        return bitmap;
+        return reusableBitmap;
     }
 }

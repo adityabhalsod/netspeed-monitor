@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Tab 2: Per-app network usage list with time period filter -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#FAFAFA">
+
+    <!-- Time period filter bar: horizontally scrollable pills -->
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scrollbars="none"
+        android:background="@android:color/white"
+        android:elevation="2dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp">
+
+        <LinearLayout
+            android:id="@+id/filter_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp">
+
+            <!-- Hour filter pill -->
+            <TextView
+                android:id="@+id/filter_hour"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:text="Hour"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                android:textColor="#888888"
+                android:gravity="center"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:layout_marginEnd="8dp"
+                android:background="@drawable/bg_filter_inactive" />
+
+            <!-- Day filter pill (default selection) -->
+            <TextView
+                android:id="@+id/filter_day"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:text="Day"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                android:textColor="@android:color/white"
+                android:gravity="center"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:layout_marginEnd="8dp"
+                android:background="@drawable/bg_filter_active" />
+
+            <!-- Week filter pill -->
+            <TextView
+                android:id="@+id/filter_week"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:text="Week"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                android:textColor="#888888"
+                android:gravity="center"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:layout_marginEnd="8dp"
+                android:background="@drawable/bg_filter_inactive" />
+
+            <!-- Month filter pill -->
+            <TextView
+                android:id="@+id/filter_month"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:text="Month"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                android:textColor="#888888"
+                android:gravity="center"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:layout_marginEnd="8dp"
+                android:background="@drawable/bg_filter_inactive" />
+
+            <!-- Year filter pill -->
+            <TextView
+                android:id="@+id/filter_year"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:text="Year"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                android:textColor="#888888"
+                android:gravity="center"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:background="@drawable/bg_filter_inactive" />
+
+        </LinearLayout>
+    </HorizontalScrollView>
+
+    <!-- Loading indicator shown while querying stats -->
+    <TextView
+        android:id="@+id/tv_loading"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Loading app usage data…"
+        android:textSize="14sp"
+        android:textColor="#888888"
+        android:gravity="center"
+        android:padding="24dp"
+        android:visibility="gone" />
+
+    <!-- Permission prompt: shown if PACKAGE_USAGE_STATS not granted -->
+    <LinearLayout
+        android:id="@+id/permission_prompt"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="32dp"
+        android:visibility="gone">
+
+        <!-- Lock icon indicator -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="\uD83D\uDD12"
+            android:textSize="48sp"
+            android:layout_marginBottom="16dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Usage Access Required"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="#212121"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Step-by-step guide for granting permission -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_card"
+            android:clipToOutline="true"
+            android:outlineProvider="background"
+            android:orientation="vertical"
+            android:padding="20dp"
+            android:layout_marginBottom="24dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Follow these steps:"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="#212121"
+                android:layout_marginBottom="12dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="1. Tap the button below to open Settings"
+                android:textSize="14sp"
+                android:textColor="#424242"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text='2. Find \"Net Speed Monitor\" in the list'
+                android:textSize="14sp"
+                android:textColor="#424242"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="3. Tap on it and toggle the switch ON"
+                android:textSize="14sp"
+                android:textColor="#424242"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="4. Come back to this app \u2014 data will load automatically"
+                android:textSize="14sp"
+                android:textColor="#424242" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btn_grant_permission"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:text="\u2192  Open Usage Access Settings"
+            android:textColor="@android:color/white"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:textAllCaps="false"
+            android:background="@drawable/bg_button_start"
+            android:stateListAnimator="@null" />
+    </LinearLayout>
+
+    <!-- Scrollable list of per-app usage items -->
+    <ScrollView
+        android:id="@+id/app_list_scroll"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:id="@+id/app_list_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="12dp" />
+    </ScrollView>
+
+</LinearLayout>

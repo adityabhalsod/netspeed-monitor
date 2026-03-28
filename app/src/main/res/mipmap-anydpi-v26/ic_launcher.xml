@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Adaptive launcher icon definition for Android 8.0+ -->
+<!-- Adaptive launcher icon: bandwidth speed meter from assets -->
 <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- Background layer: dark deep navy -->
-    <background android:drawable="@drawable/ic_launcher_background" />
-    <!-- Foreground layer: lightning bolt on electric blue circle -->
-    <foreground android:drawable="@drawable/ic_launcher_foreground" />
+    <!-- Background: white to match the transparent PNG -->
+    <background android:drawable="@android:color/white" />
+    <!-- Foreground: bandwidth speed meter icon -->
+    <foreground android:drawable="@mipmap/ic_launcher_foreground" />
 </adaptive-icon>

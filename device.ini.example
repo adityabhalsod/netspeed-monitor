@@ -1,0 +1,19 @@
+# ─── Device Configuration (Example) ───────────────────────────────────────────
+# Copy this file to device.ini and fill in your values:
+#   cp device.ini.example device.ini
+#
+# Then run:
+#   node setup.js init     → generates local.properties from device.ini
+#   node setup.js deploy   → build + install + launch
+# ──────────────────────────────────────────────────────────────────────────────
+
+# Device IP address for ADB wireless debugging
+device.ip=192.168.1.100
+
+# ADB wireless debugging port (shown in Settings → Developer Options → Wireless Debugging)
+device.port=5555
+
+# Path to Android SDK on this machine
+# Linux/macOS: /home/<user>/Android/Sdk  or  ~/Library/Android/sdk
+# Windows:     C:\\Users\\<user>\\AppData\\Local\\Android\\Sdk
+sdk.dir=/home/youruser/Android/Sdk
