@@ -12,7 +12,6 @@ Real-time upload & download speed in your status bar — updated every second.
 [![APK Size](https://img.shields.io/badge/APK%20Size-~182%20KB-brightgreen?style=for-the-badge)](https://github.com/adityabhalsod/netspeed-monitor/releases)
 [![Dependencies](https://img.shields.io/badge/Dependencies-Zero-blue?style=for-the-badge)](#-tech-stack)
 [![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](LICENSE)
-[![Release](https://img.shields.io/github/v/release/adityabhalsod/netspeed-monitor?style=for-the-badge&color=orange)](https://github.com/adityabhalsod/netspeed-monitor/releases/latest)
 [![CI](https://img.shields.io/github/actions/workflow/status/adityabhalsod/netspeed-monitor/release.yml?branch=main&style=for-the-badge&label=CI&logo=github)](https://github.com/adityabhalsod/netspeed-monitor/actions)
 
 **~182 KB release APK · Zero dependencies · Pure Android SDK · No ads · No tracking**
