@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.AppOpsManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.InstallSourceInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
@@ -174,6 +175,10 @@ public class MainActivity extends Activity implements SpeedMonitorService.SpeedC
         tabApps.findViewById(R.id.btn_grant_permission).setOnClickListener(v ->
                 openUsageAccessSettings());
 
+        // Restricted settings button for Tab 2 — opens App Info to allow restricted settings
+        tabApps.findViewById(R.id.btn_allow_restricted).setOnClickListener(v ->
+                openAppInfoSettings());
+
         // --- Bind Tab 3: Data report ---
         tabReport = findViewById(R.id.tab_report);
         tvMonthLabel = tabReport.findViewById(R.id.tv_month_label);
@@ -191,6 +196,37 @@ public class MainActivity extends Activity implements SpeedMonitorService.SpeedC
         // Grant permission button for Tab 3 — opens usage access page focused on our app
         tabReport.findViewById(R.id.btn_report_grant).setOnClickListener(v ->
                 openUsageAccessSettings());
+
+        // Restricted settings button for Tab 3 — opens App Info to allow restricted settings
+        tabReport.findViewById(R.id.btn_report_allow_restricted).setOnClickListener(v ->
+                openAppInfoSettings());
+
+        // --- Show restricted settings warning on Android 13+ for sideloaded apps ---
+        if (isRestrictedSettingsApplicable()) {
+            // Show the amber warning banner on both permission prompts
+            tabApps.findViewById(R.id.restricted_warning).setVisibility(View.VISIBLE);
+            tabReport.findViewById(R.id.report_restricted_warning).setVisibility(View.VISIBLE);
+
+            // Update step instructions to include restricted settings as first step (Tab 2)
+            ((TextView) tabApps.findViewById(R.id.tv_step1)).setText(
+                    "1. Tap \"Allow Restricted Settings\" above first");
+            ((TextView) tabApps.findViewById(R.id.tv_step2)).setText(
+                    "2. In App Info, tap \u22EE menu \u2192 \"Allow restricted settings\"");
+            ((TextView) tabApps.findViewById(R.id.tv_step3)).setText(
+                    "3. Come back and tap \"Open Usage Access Settings\" below");
+            ((TextView) tabApps.findViewById(R.id.tv_step4)).setText(
+                    "4. Toggle the switch ON for Net Speed Monitor");
+
+            // Update step instructions (Tab 3)
+            ((TextView) tabReport.findViewById(R.id.tv_report_step1)).setText(
+                    "1. Tap \"Allow Restricted Settings\" above first");
+            ((TextView) tabReport.findViewById(R.id.tv_report_step2)).setText(
+                    "2. In App Info, tap \u22EE menu \u2192 \"Allow restricted settings\"");
+            ((TextView) tabReport.findViewById(R.id.tv_report_step3)).setText(
+                    "3. Come back and tap \"Open Usage Access Settings\" below");
+            ((TextView) tabReport.findViewById(R.id.tv_report_step4)).setText(
+                    "4. Toggle the switch ON for Net Speed Monitor");
+        }
 
         // --- Bottom tab bar navigation ---
         tabBtnSpeed = findViewById(R.id.tab_btn_speed);
@@ -728,8 +764,47 @@ public class MainActivity extends Activity implements SpeedMonitorService.SpeedC
         }
         // Show Toast reminder so the user knows what to toggle
         Toast.makeText(this,
-                "Please turn it ON for NetSpeed Monitor in the list to grant permission.",
+                "Please turn it ON for Net Speed Monitor to grant permission.",
                 Toast.LENGTH_LONG).show();
+    }
+
+    /**
+     * Opens the App Info settings page for this app.
+     * On Android 13+, the user can tap the 3-dot menu to "Allow restricted settings"
+     * which unblocks special permissions like Usage Access for sideloaded apps.
+     */
+    private void openAppInfoSettings() {
+        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+        // Target our own package so the system opens our App Info directly
+        intent.setData(Uri.fromParts("package", getPackageName(), null));
+        startActivity(intent);
+        // Guide the user to the restricted settings toggle in App Info
+        Toast.makeText(this,
+                "Tap \u22EE (3-dot menu) \u2192 \"Allow restricted settings\" to unblock permissions.",
+                Toast.LENGTH_LONG).show();
+    }
+
+    /**
+     * Checks if restricted settings apply to this app.
+     * On Android 13+ (API 33+), sideloaded apps have restricted settings enabled,
+     * which blocks special permissions like PACKAGE_USAGE_STATS from being granted.
+     * Returns true if the app is sideloaded on API 33+.
+     */
+    private boolean isRestrictedSettingsApplicable() {
+        // Restricted settings only exist on Android 13+ (API 33)
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) return false;
+
+        try {
+            // Check the install source — null initiating package means sideloaded
+            InstallSourceInfo sourceInfo = getPackageManager()
+                    .getInstallSourceInfo(getPackageName());
+            String installer = sourceInfo.getInstallingPackageName();
+            // If no installer (sideloaded via ADB/APK), restricted settings apply
+            return installer == null;
+        } catch (PackageManager.NameNotFoundException e) {
+            // Package not found — shouldn't happen, but assume restricted as safe default
+            return true;
+        }
     }
 
     /**

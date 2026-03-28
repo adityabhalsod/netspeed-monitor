@@ -235,6 +235,50 @@
             android:textColor="#212121"
             android:layout_marginBottom="16dp" />
 
+        <!-- Restricted settings warning: shown on Android 13+ for sideloaded apps -->
+        <LinearLayout
+            android:id="@+id/report_restricted_warning"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_warning"
+            android:padding="14dp"
+            android:orientation="vertical"
+            android:layout_marginBottom="16dp"
+            android:visibility="gone">
+
+            <!-- Restricted settings title with warning icon -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="\u26A0  Restricted Settings Detected"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="#E65100"
+                android:layout_marginBottom="6dp" />
+
+            <!-- Explanation for restricted settings on sideloaded apps -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Android blocks Usage Access for apps installed via APK. You must first allow restricted settings from App Info."
+                android:textSize="13sp"
+                android:textColor="#BF360C"
+                android:layout_marginBottom="10dp" />
+
+            <!-- Button to open App Info where user can allow restricted settings -->
+            <Button
+                android:id="@+id/btn_report_allow_restricted"
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:text="\u2192  Allow Restricted Settings"
+                android:textColor="@android:color/white"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textAllCaps="false"
+                android:background="@drawable/bg_button_stop"
+                android:stateListAnimator="@null" />
+        </LinearLayout>
+
         <!-- Step-by-step guide for granting permission -->
         <LinearLayout
             android:layout_width="match_parent"
@@ -256,6 +300,7 @@
                 android:layout_marginBottom="12dp" />
 
             <TextView
+                android:id="@+id/tv_report_step1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="1. Tap the button below to open Settings"
@@ -264,6 +309,7 @@
                 android:layout_marginBottom="8dp" />
 
             <TextView
+                android:id="@+id/tv_report_step2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text='2. Find \"Net Speed Monitor\" in the list'
@@ -272,6 +318,7 @@
                 android:layout_marginBottom="8dp" />
 
             <TextView
+                android:id="@+id/tv_report_step3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="3. Tap on it and toggle the switch ON"
@@ -280,6 +327,7 @@
                 android:layout_marginBottom="8dp" />
 
             <TextView
+                android:id="@+id/tv_report_step4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="4. Come back to this app \u2014 data will load automatically"
