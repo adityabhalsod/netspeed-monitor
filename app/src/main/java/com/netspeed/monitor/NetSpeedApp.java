@@ -44,24 +44,28 @@ public class NetSpeedApp extends Application {
     }
 
     /**
-     * Creates a low-importance notification channel for silent speed updates.
+     * Creates a high-priority notification channel so speed notifications stay on top.
+     * Sound and vibration are disabled — only visual priority is elevated.
      */
     private void createNotificationChannel() {
-        // LOW importance: shows in shade but never makes sound or vibrates
+        // DEFAULT importance: keeps notification visible and prominent without heads-up popup
         NotificationChannel channel = new NotificationChannel(
                 CHANNEL_ID,
                 "Network Speed Monitor",
-                NotificationManager.IMPORTANCE_LOW
+                NotificationManager.IMPORTANCE_DEFAULT
         );
         channel.setDescription("Live network upload and download speed monitoring");
         channel.enableVibration(false);
         channel.setSound(null, null);
+        // Disable heads-up pop-up by locking screen visibility
+        channel.setLockscreenVisibility(android.app.Notification.VISIBILITY_PUBLIC);
         // Prevent the notification badge ("1") from appearing on the app icon
         channel.setShowBadge(false);
 
-        // Register the channel with the system
+        // Register the channel with the system (delete first to allow importance upgrades)
         NotificationManager nm = getSystemService(NotificationManager.class);
         if (nm != null) {
+            nm.deleteNotificationChannel(CHANNEL_ID);
             nm.createNotificationChannel(channel);
         }
     }

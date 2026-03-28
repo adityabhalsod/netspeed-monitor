@@ -15,6 +15,7 @@ app/build/
 *.iws
 *.ipr
 local.properties
+device.ini
 
 ## macOS filesystem metadata
 .DS_Store

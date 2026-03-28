@@ -63,22 +63,26 @@ netspeed-monitor/
 │       ├── AndroidManifest.xml             # Permissions, components
 │       ├── java/com/netspeed/monitor/
 │       │   ├── NetSpeedApp.java            # Application class, notification channel
-│       │   ├── MainActivity.java           # Dashboard with gauges & toggle
+│       │   ├── MainActivity.java           # 3-tab dashboard (speed, apps, report)
 │       │   ├── SettingsActivity.java       # Start-on-boot preference
-│       │   ├── SpeedMonitorService.java    # Foreground service, 1s timer
+│       │   ├── SpeedMonitorService.java    # Foreground service, 100ms timer
 │       │   ├── BootReceiver.java           # Restarts service after reboot
 │       │   ├── TrafficStatsCalculator.java # Speed calculation from kernel counters
 │       │   ├── SpeedIconGenerator.java     # Dynamic bitmap icon for status bar
 │       │   ├── SpeedGaugeView.java         # Custom arc gauge View (Canvas)
-│       │   └── SpeedUtils.java             # Speed/bytes formatting utilities
+│       │   ├── SpeedUtils.java             # Speed/bytes formatting utilities
+│       │   ├── AppUsageTracker.java        # Per-app network usage via NetworkStatsManager
+│       │   └── DataUsageReport.java        # Monthly daily data usage breakdown
 │       └── res/
-│           ├── layout/                     # activity_main.xml, activity_settings.xml
+│           ├── layout/                     # activity_main, activity_settings, tab layouts
 │           ├── drawable/                   # Vector icons, shape backgrounds
 │           ├── mipmap/                     # Adaptive launcher icons
 │           └── values/                     # colors, strings, themes
 ├── build.gradle.kts                        # Root build config (AGP only)
 ├── settings.gradle.kts                     # Module config
 ├── gradle.properties                       # Build performance flags
+├── device.ini.example                      # Device config template (copy → device.ini)
+├── setup.js                                # Build & deploy helper script
 ├── .github/workflows/release.yml           # CI/CD: build, sign, release
 ├── DEBUG.md                                # Build & debug guide
 ├── COMMAND.md                              # ADB command reference
@@ -193,9 +197,59 @@ No NDK, CMake, or Kotlin plugin needed.
 
 ## 🚀 Build & Run
 
-See **[DEBUG.md](DEBUG.md)** for the full guide covering prerequisites, ADB setup, logcat filtering, signing, and troubleshooting.
+The project uses **`device.ini`** for device config and **`setup.js`** to automate everything.
 
-### Debug Build
+### Quick Start
+
+```bash
+# 1. Clone the repo
+git clone https://github.com/adityabhalsod/netspeed-monitor.git
+cd netspeed-monitor
+
+# 2. Create your device config from the template
+cp device.ini.example device.ini
+
+# 3. Edit device.ini with your values
+#    - device.ip   → your phone's IP (Settings → About → IP address)
+#    - device.port → wireless debugging port (Settings → Developer Options → Wireless Debugging)
+#    - sdk.dir     → path to your Android SDK
+
+# 4. Initialize the project (generates local.properties from device.ini)
+node setup.js init
+
+# 5. Build, install, and launch in one command
+node setup.js deploy
+```
+
+### `device.ini` — Device Configuration
+
+This file stores your machine-specific settings (not committed to git):
+
+```ini
+# Device IP address for ADB wireless debugging
+device.ip=192.168.1.6
+
+# ADB wireless debugging port
+device.port=44581
+
+# Path to Android SDK
+sdk.dir=/home/youruser/Android/Sdk
+```
+
+### `setup.js` — Available Commands
+
+| Command | What it does |
+|---|---|
+| `node setup.js init` | Reads `device.ini` → generates `local.properties` |
+| `node setup.js build` | Compiles the debug APK via Gradle |
+| `node setup.js run` | Installs APK + launches app on your device |
+| `node setup.js deploy` | Full pipeline: build → install → launch |
+
+> **Note:** `local.properties` is auto-generated from `device.ini`. If it doesn't exist when you run `build` or `deploy`, it will be created automatically.
+
+### Manual Build (without setup.js)
+
+See **[DEBUG.md](DEBUG.md)** for the full guide covering prerequisites, ADB setup, logcat filtering, signing, and troubleshooting.
 
 ```bash
 chmod +x gradlew

@@ -17,8 +17,10 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 /**
- * Foreground service that monitors network speed every second
+ * Foreground service that monitors network speed every 100ms
  * and updates a persistent status bar notification with live speed values.
+ * UI callbacks fire at 100ms for responsive gauges; notification updates
+ * are throttled to every 500ms to avoid excessive system overhead.
  */
 public class SpeedMonitorService extends Service {
 
@@ -29,8 +31,16 @@ public class SpeedMonitorService extends Service {
     // Unique notification ID for the persistent foreground notification
     private static final int NOTIFICATION_ID = 1001;
 
-    // Timer that fires speed calculation every second
+    // Speed calculation interval in milliseconds (100ms = 10 updates/sec)
+    private static final long SPEED_INTERVAL_MS = 100;
+    // Notification update interval: update every Nth tick to reduce system overhead
+    // 5 ticks × 100ms = 500ms between notification updates
+    private static final int NOTIFICATION_THROTTLE_TICKS = 5;
+
+    // Timer that fires speed calculation every 100ms
     private Timer timer;
+    // Tick counter for throttling notification updates
+    private int tickCount;
     // Handler for posting UI callbacks from the timer thread to the main thread
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
     // Reference to the notification manager for posting updates
@@ -91,8 +101,15 @@ public class SpeedMonitorService extends Service {
 
     /**
      * Promotes to foreground with an initial notification and starts the speed timer.
+     * Guards against double-start: cancels any existing timer before creating a new one.
      */
     private void startMonitoring() {
+        // Cancel any existing timer to prevent duplicate scheduling on rapid taps
+        if (timer != null) {
+            timer.cancel();
+            timer = null;
+        }
+
         // Reset calculator for a fresh session
         NetSpeedApp.resetCalculator();
         calculator = NetSpeedApp.getCalculator();
@@ -109,8 +126,10 @@ public class SpeedMonitorService extends Service {
         }
 
         running = true;
+        // Reset tick counter for notification throttling
+        tickCount = 0;
 
-        // Schedule speed calculation every 1 second
+        // Schedule speed calculation every 100ms for responsive UI updates
         timer = new Timer("SpeedTimer", true);
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
@@ -123,19 +142,26 @@ public class SpeedMonitorService extends Service {
                 long sRx = session[0];
                 long sTx = session[1];
 
-                // Format speed for notification text
-                String dlText = SpeedUtils.formatSpeed(dl);
-                String ulText = SpeedUtils.formatSpeed(ul);
+                // Throttle notification updates to every 500ms (every 5th tick)
+                // Notifications are heavyweight; updating too often wastes CPU and battery
+                tickCount++;
+                if (tickCount >= NOTIFICATION_THROTTLE_TICKS) {
+                    tickCount = 0;
 
-                // Generate dynamic bitmap icon showing speed in status bar
-                Bitmap iconBitmap = SpeedIconGenerator.createSpeedIcon(dl);
-                Icon icon = Icon.createWithBitmap(iconBitmap);
+                    // Format speed for notification text
+                    String dlText = SpeedUtils.formatSpeed(dl);
+                    String ulText = SpeedUtils.formatSpeed(ul);
 
-                // Update the notification with latest speed values
-                Notification n = buildNotification(dlText, ulText, icon);
-                notificationManager.notify(NOTIFICATION_ID, n);
+                    // Generate dynamic bitmap icon showing speed in status bar
+                    Bitmap iconBitmap = SpeedIconGenerator.createSpeedIcon(dl);
+                    Icon icon = Icon.createWithBitmap(iconBitmap);
 
-                // Deliver speed update to the UI callback on the main thread
+                    // Update the notification with latest speed values
+                    Notification n = buildNotification(dlText, ulText, icon);
+                    notificationManager.notify(NOTIFICATION_ID, n);
+                }
+
+                // Deliver speed update to the UI callback on the main thread (every 100ms)
                 mainHandler.post(() -> {
                     SpeedCallback cb = callback;
                     if (cb != null) {
@@ -143,7 +169,7 @@ public class SpeedMonitorService extends Service {
                     }
                 });
             }
-        }, 0, 1000);
+        }, 0, SPEED_INTERVAL_MS);
     }
 
     /**
@@ -195,6 +221,8 @@ public class SpeedMonitorService extends Service {
                 .setOnlyAlertOnce(true)
                 .setShowWhen(false)
                 .setCategory(Notification.CATEGORY_SERVICE)
+                .setPriority(Notification.PRIORITY_MAX)
+                .setSortKey("0")
                 .setBadgeIconType(Notification.BADGE_ICON_NONE)
                 .setNumber(0)
                 .addAction(new Notification.Action.Builder(
