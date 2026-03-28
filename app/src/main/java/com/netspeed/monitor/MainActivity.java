@@ -98,6 +98,9 @@ public class MainActivity extends Activity implements SpeedMonitorService.SpeedC
     private static final long APP_USAGE_REFRESH_INTERVAL = 3000;
     // Flag to avoid overlapping refresh queries
     private boolean isAppUsageLoading = false;
+    // Flags to prevent repeated auto-redirects to settings (once per tab visit)
+    private boolean hasRedirectedApps = false;
+    private boolean hasRedirectedReport = false;
     // Runnable that periodically reloads app usage data while Apps tab is visible
     private final Runnable appUsageRefreshRunnable = new Runnable() {
         @Override
@@ -295,6 +298,10 @@ public class MainActivity extends Activity implements SpeedMonitorService.SpeedC
         if (tab == currentTab) return;
         currentTab = tab;
 
+        // Reset redirect flags so switching back triggers a fresh auto-redirect
+        if (tab == 1) hasRedirectedApps = false;
+        if (tab == 2) hasRedirectedReport = false;
+
         // Toggle visibility of the 3 tab content views
         tabSpeed.setVisibility(tab == 0 ? View.VISIBLE : View.GONE);
         tabApps.setVisibility(tab == 1 ? View.VISIBLE : View.GONE);
@@ -443,10 +450,16 @@ public class MainActivity extends Activity implements SpeedMonitorService.SpeedC
      */
     private void loadAppUsage() {
         if (!hasUsageStatsPermission()) {
-            // Show full-screen permission prompt, hide list
+            // Show fallback permission prompt UI, hide list
             appPermissionPrompt.setVisibility(View.VISIBLE);
             appListScroll.setVisibility(View.GONE);
             appLoading.setVisibility(View.GONE);
+
+            // Auto-redirect to settings once per tab visit to avoid infinite loop
+            if (!hasRedirectedApps) {
+                hasRedirectedApps = true;
+                autoRedirectForPermission();
+            }
             return;
         }
 
@@ -641,8 +654,15 @@ public class MainActivity extends Activity implements SpeedMonitorService.SpeedC
         tvMonthLabel.setText(MONTH_NAMES[reportMonth] + " " + reportYear);
 
         if (!hasUsageStatsPermission()) {
+            // Show fallback permission prompt UI, hide report list
             reportPermissionPrompt.setVisibility(View.VISIBLE);
             reportListScroll.setVisibility(View.GONE);
+
+            // Auto-redirect to settings once per tab visit to avoid infinite loop
+            if (!hasRedirectedReport) {
+                hasRedirectedReport = true;
+                autoRedirectForPermission();
+            }
             return;
         }
 
@@ -753,6 +773,17 @@ public class MainActivity extends Activity implements SpeedMonitorService.SpeedC
     // ==================== Utilities ====================
 
     /**
+     * Automatically redirects to the Usage Access settings screen.
+     * Always opens Usage Access directly — avoids App Info redirect since
+     * some OEMs (Samsung OneUI) don't show the 3-dot restricted settings menu.
+     * If the toggle is greyed out, the fallback UI still offers an App Info button.
+     */
+    private void autoRedirectForPermission() {
+        // Always open Usage Access settings directly for the best user experience
+        openUsageAccessSettings();
+    }
+
+    /**
      * Opens the Usage Access Settings screen, focused directly on this app when possible.
      * On Android 10+ the package URI lets the system jump straight to our app's toggle.
      * Shows a Toast reminder so the user knows exactly what to do.
@@ -767,9 +798,9 @@ public class MainActivity extends Activity implements SpeedMonitorService.SpeedC
             // Some devices don't support the package-specific URI — fall back to generic page
             startActivity(new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS));
         }
-        // Show Toast reminder so the user knows what to toggle
+        // Clear toast guiding the user to enable the toggle for our app
         Toast.makeText(this,
-                "Please turn it ON for Net Speed Monitor to grant permission.",
+                "\u26A0 Please find \"Net Speed Monitor\" and turn the switch ON to allow usage access.",
                 Toast.LENGTH_LONG).show();
     }
 
