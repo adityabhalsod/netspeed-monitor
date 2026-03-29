@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Section background inside the widget: Light mode -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <!-- Subtle dark tint on light background for visual separation -->
+    <solid android:color="@color/widget_section_bg" />
+    <!-- Rounded corners matching parent widget -->
+    <corners android:radius="12dp" />
+</shape>

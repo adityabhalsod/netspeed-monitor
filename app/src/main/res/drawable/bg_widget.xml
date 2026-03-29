@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Rounded background for the home screen widget: Light mode -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <!-- Frosted white background for light mode -->
+    <solid android:color="@color/widget_bg" />
+    <!-- Rounded corners for modern widget look -->
+    <corners android:radius="16dp" />
+</shape>

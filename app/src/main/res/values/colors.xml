@@ -6,4 +6,26 @@
     <color name="upload_orange">#FF9100</color>
     <!-- App background -->
     <color name="background">#FAFAFA</color>
+
+    <!-- Widget colors: Light mode defaults -->
+    <!-- Main widget background -->
+    <color name="widget_bg">#F0FFFFFF</color>
+    <!-- Section card background inside the widget -->
+    <color name="widget_section_bg">#14000000</color>
+    <!-- Primary text: header, usage values -->
+    <color name="widget_text_primary">#212121</color>
+    <!-- Secondary text: labels, section titles -->
+    <color name="widget_text_secondary">#757575</color>
+    <!-- Muted text: sub-labels like "Download", "Upload" -->
+    <color name="widget_text_muted">#999999</color>
+    <!-- Divider line between download and upload -->
+    <color name="widget_divider">#1F000000</color>
+    <!-- WiFi label color -->
+    <color name="widget_wifi">#388E3C</color>
+    <!-- Mobile label color -->
+    <color name="widget_mobile">#F57C00</color>
+    <!-- Total label color -->
+    <color name="widget_total">#1976D2</color>
+    <!-- Status stopped color -->
+    <color name="widget_status_stopped">#9E9E9E</color>
 </resources>

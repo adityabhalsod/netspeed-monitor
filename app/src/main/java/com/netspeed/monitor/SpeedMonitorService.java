@@ -129,6 +129,9 @@ public class SpeedMonitorService extends Service {
         // Reset tick counter for notification throttling
         tickCount = 0;
 
+        // Refresh home screen widgets to show "Live" status
+        SpeedWidgetProvider.refreshAllWidgets(this);
+
         // Schedule speed calculation every 100ms for responsive UI updates
         timer = new Timer("SpeedTimer", true);
         timer.scheduleAtFixedRate(new TimerTask() {
@@ -159,6 +162,13 @@ public class SpeedMonitorService extends Service {
                     // Update the notification with latest speed values
                     Notification n = buildNotification(dlText, ulText, icon);
                     notificationManager.notify(NOTIFICATION_ID, n);
+
+                    // Broadcast speed to home screen widget (same 500ms throttle)
+                    Intent widgetIntent = new Intent(SpeedWidgetProvider.ACTION_SPEED_UPDATE);
+                    widgetIntent.setPackage(getPackageName());
+                    widgetIntent.putExtra(SpeedWidgetProvider.EXTRA_DOWNLOAD_SPEED, dl);
+                    widgetIntent.putExtra(SpeedWidgetProvider.EXTRA_UPLOAD_SPEED, ul);
+                    sendBroadcast(widgetIntent);
                 }
 
                 // Deliver speed update to the UI callback on the main thread (every 100ms)
@@ -182,6 +192,10 @@ public class SpeedMonitorService extends Service {
             timer = null;
         }
         stopForeground(STOP_FOREGROUND_REMOVE);
+
+        // Refresh home screen widgets to show "Stopped" status and reset speed
+        SpeedWidgetProvider.refreshAllWidgets(this);
+
         stopSelf();
     }
 

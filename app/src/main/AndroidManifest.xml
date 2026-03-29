@@ -58,6 +58,21 @@
             </intent-filter>
         </receiver>
 
+        <!-- Home screen widget: live speed + today's data usage -->
+        <receiver
+            android:name=".SpeedWidgetProvider"
+            android:exported="true">
+            <intent-filter>
+                <!-- Standard widget update action -->
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <!-- Custom live speed update action from SpeedMonitorService -->
+                <action android:name="com.netspeed.monitor.action.WIDGET_SPEED_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/speed_widget_info" />
+        </receiver>
+
     </application>
 
 </manifest>
