@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Widget colors: Dark mode overrides -->
+    <!-- Main widget background: dark translucent -->
+    <color name="widget_bg">#E61E1E2E</color>
+    <!-- Section card background: subtle light overlay on dark -->
+    <color name="widget_section_bg">#1AFFFFFF</color>
+    <!-- Primary text: bright white for readability on dark -->
+    <color name="widget_text_primary">#FFFFFF</color>
+    <!-- Secondary text: muted white for labels -->
+    <color name="widget_text_secondary">#B3FFFFFF</color>
+    <!-- Muted text: dimmer for sub-labels -->
+    <color name="widget_text_muted">#80FFFFFF</color>
+    <!-- Divider line: subtle white on dark -->
+    <color name="widget_divider">#33FFFFFF</color>
+    <!-- WiFi label: lighter green for dark bg -->
+    <color name="widget_wifi">#4CAF50</color>
+    <!-- Mobile label: lighter orange for dark bg -->
+    <color name="widget_mobile">#FF9800</color>
+    <!-- Total label: lighter blue for dark bg -->
+    <color name="widget_total">#42A5F5</color>
+    <!-- Status stopped color -->
+    <color name="widget_status_stopped">#888888</color>
+</resources>

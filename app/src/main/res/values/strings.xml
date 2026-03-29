@@ -24,4 +24,7 @@
     <string name="unit_kbps">KB/s</string>
     <string name="unit_mbps">MB/s</string>
     <string name="unit_gbps">GB/s</string>
+
+    <!-- Widget description shown in the widget picker -->
+    <string name="widget_description">Live download/upload speed and today\'s data usage summary</string>
 </resources>
