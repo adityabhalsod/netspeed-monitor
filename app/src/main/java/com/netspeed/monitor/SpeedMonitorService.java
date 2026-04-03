@@ -88,6 +88,10 @@ public class SpeedMonitorService extends Service {
                 // Stop monitoring and shut down the service
                 stopMonitoring();
             }
+        } else {
+            // Null intent means the system restarted the service after it was killed (START_STICKY).
+            // Resume monitoring so the notification reappears without user intervention.
+            startMonitoring();
         }
         // START_STICKY: system restarts the service if it's killed
         return START_STICKY;
