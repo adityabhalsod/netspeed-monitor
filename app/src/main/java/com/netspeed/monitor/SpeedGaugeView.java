@@ -29,6 +29,11 @@ public class SpeedGaugeView extends View {
     // Arrow symbol displayed above speed text (↓ or ↑)
     private String arrow = "\u2193";
 
+    // Theme-aware colors resolved from resources for dark mode support
+    private int colorValueText;
+    private int colorLabelText;
+    private int colorZeroUnit;
+
     // Reusable paint objects for efficient drawing
     private final Paint trackPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint arcPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -58,6 +63,11 @@ public class SpeedGaugeView extends View {
     private void initPaints() {
         float density = getResources().getDisplayMetrics().density;
 
+        // Resolve theme-aware colors from resources (auto-switches for dark mode)
+        colorValueText = getContext().getColor(R.color.text_primary);
+        colorLabelText = getContext().getColor(R.color.text_secondary);
+        colorZeroUnit = getContext().getColor(R.color.text_muted);
+
         // Track paint: dim arc background showing full gauge range
         trackPaint.setStyle(Paint.Style.STROKE);
         trackPaint.setStrokeCap(Paint.Cap.ROUND);
@@ -83,7 +93,8 @@ public class SpeedGaugeView extends View {
         labelPaint.setTextAlign(Paint.Align.CENTER);
         labelPaint.setTypeface(Typeface.create("sans-serif", Typeface.NORMAL));
         labelPaint.setTextSize(13 * density);
-        labelPaint.setColor(0xFF757575);
+        // Use theme-aware secondary text color for gauge label
+        labelPaint.setColor(colorLabelText);
 
         // Arrow symbol: colored arrow above speed value
         arrowPaint.setTextAlign(Paint.Align.CENTER);
@@ -167,12 +178,12 @@ public class SpeedGaugeView extends View {
         arrowPaint.setColor(arcColor);
         canvas.drawText(arrow, cx, arcCenterY - 18 * density, arrowPaint);
 
-        // Draw speed value number at the arc center
-        valuePaint.setColor(0xFF212121);
+        // Draw speed value number at the arc center with theme-aware color
+        valuePaint.setColor(colorValueText);
         canvas.drawText(valueText, cx, arcCenterY + 10 * density, valuePaint);
 
-        // Draw unit label below the speed value
-        unitPaint.setColor(speed > 0 ? arcColor : 0xFF9E9E9E);
+        // Draw unit label below the speed value (colored when active, muted when zero)
+        unitPaint.setColor(speed > 0 ? arcColor : colorZeroUnit);
         canvas.drawText(unitText, cx, arcCenterY + 24 * density, unitPaint);
 
         // Draw gauge label below the arc

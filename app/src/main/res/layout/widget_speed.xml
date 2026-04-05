@@ -124,15 +124,16 @@
         android:gravity="center_vertical">
 
         <!-- Section label -->
+
+        <!-- Usage breakdown row: WiFi | Mobile | Total -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="6dp"
             android:text="Today\u0027s Usage"
             android:textColor="@color/widget_text_secondary"
-            android:textSize="14sp"
-            android:layout_marginBottom="6dp" />
+            android:textSize="14sp" />
 
-        <!-- Usage breakdown row: WiFi | Mobile | Total -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

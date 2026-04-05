@@ -1,9 +1,11 @@
 <resources>
     <!-- Base application theme: lightweight Material Light with no action bar -->
     <style name="Theme.NetSpeedMonitor" parent="android:Theme.Material.Light.NoActionBar">
-        <!-- Light grey status bar matching the top bar -->
-        <item name="android:statusBarColor">#FAFAFA</item>
+        <!-- Light status bar matching the top bar -->
+        <item name="android:statusBarColor">@color/status_bar_color</item>
         <!-- Dark status bar icons for light background -->
         <item name="android:windowLightStatusBar">true</item>
+        <!-- Light navigation bar matching the tab bar -->
+        <item name="android:navigationBarColor">@color/surface</item>
     </style>
 </resources>

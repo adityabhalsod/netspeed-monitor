@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Inactive filter pill: light grey outlined rounded background -->
+<!-- Inactive filter pill: muted rounded background, adapts to dark mode -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle">
-    <solid android:color="#F0F0F0" />
+    <solid android:color="@color/filter_inactive_bg" />
     <corners android:radius="18dp" />
 </shape>

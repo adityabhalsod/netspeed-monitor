@@ -3,18 +3,18 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="#FAFAFA">
+    android:background="@color/background"
+    android:orientation="vertical">
 
     <!-- Time period filter bar: horizontally scrollable pills -->
     <HorizontalScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:scrollbars="none"
-        android:background="@android:color/white"
+        android:background="@color/surface"
         android:elevation="2dp"
         android:paddingTop="8dp"
-        android:paddingBottom="8dp">
+        android:paddingBottom="8dp"
+        android:scrollbars="none">
 
         <LinearLayout
             android:id="@+id/filter_bar"
@@ -29,74 +29,74 @@
                 android:id="@+id/filter_hour"
                 android:layout_width="wrap_content"
                 android:layout_height="36dp"
-                android:text="Hour"
-                android:textSize="13sp"
-                android:textStyle="bold"
-                android:textColor="#888888"
+                android:layout_marginEnd="8dp"
+                android:background="@drawable/bg_filter_inactive"
                 android:gravity="center"
                 android:paddingStart="16dp"
                 android:paddingEnd="16dp"
-                android:layout_marginEnd="8dp"
-                android:background="@drawable/bg_filter_inactive" />
+                android:text="Hour"
+                android:textColor="@color/text_muted"
+                android:textSize="13sp"
+                android:textStyle="bold" />
 
             <!-- Day filter pill (default selection) -->
             <TextView
                 android:id="@+id/filter_day"
                 android:layout_width="wrap_content"
                 android:layout_height="36dp"
-                android:text="Day"
-                android:textSize="13sp"
-                android:textStyle="bold"
-                android:textColor="@android:color/white"
+                android:layout_marginEnd="8dp"
+                android:background="@drawable/bg_filter_active"
                 android:gravity="center"
                 android:paddingStart="16dp"
                 android:paddingEnd="16dp"
-                android:layout_marginEnd="8dp"
-                android:background="@drawable/bg_filter_active" />
+                android:text="Day"
+                android:textColor="@color/filter_active_text"
+                android:textSize="13sp"
+                android:textStyle="bold" />
 
             <!-- Week filter pill -->
             <TextView
                 android:id="@+id/filter_week"
                 android:layout_width="wrap_content"
                 android:layout_height="36dp"
-                android:text="Week"
-                android:textSize="13sp"
-                android:textStyle="bold"
-                android:textColor="#888888"
+                android:layout_marginEnd="8dp"
+                android:background="@drawable/bg_filter_inactive"
                 android:gravity="center"
                 android:paddingStart="16dp"
                 android:paddingEnd="16dp"
-                android:layout_marginEnd="8dp"
-                android:background="@drawable/bg_filter_inactive" />
+                android:text="Week"
+                android:textColor="@color/text_muted"
+                android:textSize="13sp"
+                android:textStyle="bold" />
 
             <!-- Month filter pill -->
             <TextView
                 android:id="@+id/filter_month"
                 android:layout_width="wrap_content"
                 android:layout_height="36dp"
-                android:text="Month"
-                android:textSize="13sp"
-                android:textStyle="bold"
-                android:textColor="#888888"
+                android:layout_marginEnd="8dp"
+                android:background="@drawable/bg_filter_inactive"
                 android:gravity="center"
                 android:paddingStart="16dp"
                 android:paddingEnd="16dp"
-                android:layout_marginEnd="8dp"
-                android:background="@drawable/bg_filter_inactive" />
+                android:text="Month"
+                android:textColor="@color/text_muted"
+                android:textSize="13sp"
+                android:textStyle="bold" />
 
             <!-- Year filter pill -->
             <TextView
                 android:id="@+id/filter_year"
                 android:layout_width="wrap_content"
                 android:layout_height="36dp"
-                android:text="Year"
-                android:textSize="13sp"
-                android:textStyle="bold"
-                android:textColor="#888888"
+                android:background="@drawable/bg_filter_inactive"
                 android:gravity="center"
                 android:paddingStart="16dp"
                 android:paddingEnd="16dp"
-                android:background="@drawable/bg_filter_inactive" />
+                android:text="Year"
+                android:textColor="@color/text_muted"
+                android:textSize="13sp"
+                android:textStyle="bold" />
 
         </LinearLayout>
     </HorizontalScrollView>
@@ -106,11 +106,11 @@
         android:id="@+id/tv_loading"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Loading app usage data…"
-        android:textSize="14sp"
-        android:textColor="#888888"
         android:gravity="center"
         android:padding="24dp"
+        android:text="Loading app usage data…"
+        android:textColor="@color/text_muted"
+        android:textSize="14sp"
         android:visibility="gone" />
 
     <!-- Permission prompt: shown if PACKAGE_USAGE_STATS not granted -->
@@ -118,8 +118,8 @@
         android:id="@+id/permission_prompt"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
         android:gravity="center"
+        android:orientation="vertical"
         android:padding="32dp"
         android:visibility="gone">
 
@@ -127,130 +127,130 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
             android:text="\uD83D\uDD12"
-            android:textSize="48sp"
-            android:layout_marginBottom="16dp" />
+            android:textSize="48sp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
             android:text="Usage Access Required"
+            android:textColor="@color/text_primary"
             android:textSize="20sp"
-            android:textStyle="bold"
-            android:textColor="#212121"
-            android:layout_marginBottom="16dp" />
+            android:textStyle="bold" />
 
         <!-- Restricted settings warning: shown on Android 13+ for sideloaded apps -->
         <LinearLayout
             android:id="@+id/restricted_warning"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/bg_warning"
-            android:padding="14dp"
-            android:orientation="vertical"
             android:layout_marginBottom="16dp"
+            android:background="@drawable/bg_warning"
+            android:orientation="vertical"
+            android:padding="14dp"
             android:visibility="gone">
 
             <!-- Restricted settings title with warning icon -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="6dp"
                 android:text="\u26A0  Restricted Settings Detected"
+                android:textColor="@color/warning_title"
                 android:textSize="14sp"
-                android:textStyle="bold"
-                android:textColor="#E65100"
-                android:layout_marginBottom="6dp" />
+                android:textStyle="bold" />
 
             <!-- Explanation for restricted settings on sideloaded apps -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
                 android:text="Android blocks Usage Access for apps installed via APK. You must first allow restricted settings from App Info."
-                android:textSize="13sp"
-                android:textColor="#BF360C"
-                android:layout_marginBottom="10dp" />
+                android:textColor="@color/warning_text"
+                android:textSize="13sp" />
 
             <!-- Button to open App Info where user can allow restricted settings -->
             <Button
                 android:id="@+id/btn_allow_restricted"
                 android:layout_width="match_parent"
                 android:layout_height="44dp"
+                android:background="@drawable/bg_button_stop"
+                android:stateListAnimator="@null"
                 android:text="\u2192  Allow Restricted Settings"
+                android:textAllCaps="false"
                 android:textColor="@android:color/white"
                 android:textSize="14sp"
-                android:textStyle="bold"
-                android:textAllCaps="false"
-                android:background="@drawable/bg_button_stop"
-                android:stateListAnimator="@null" />
+                android:textStyle="bold" />
         </LinearLayout>
 
         <!-- Step-by-step guide for granting permission -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
             android:background="@drawable/bg_card"
             android:clipToOutline="true"
-            android:outlineProvider="background"
             android:orientation="vertical"
-            android:padding="20dp"
-            android:layout_marginBottom="24dp">
+            android:outlineProvider="background"
+            android:padding="20dp">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
                 android:text="Follow these steps:"
+                android:textColor="@color/text_primary"
                 android:textSize="14sp"
-                android:textStyle="bold"
-                android:textColor="#212121"
-                android:layout_marginBottom="12dp" />
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/tv_step1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
                 android:text="1. Tap the button below to open Settings"
-                android:textSize="14sp"
-                android:textColor="#424242"
-                android:layout_marginBottom="8dp" />
+                android:textColor="@color/text_hint"
+                android:textSize="14sp" />
 
             <TextView
                 android:id="@+id/tv_step2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
                 android:text='2. Find \"Net Speed Monitor\" in the list'
-                android:textSize="14sp"
-                android:textColor="#424242"
-                android:layout_marginBottom="8dp" />
+                android:textColor="@color/text_hint"
+                android:textSize="14sp" />
 
             <TextView
                 android:id="@+id/tv_step3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
                 android:text="3. Tap on it and toggle the switch ON"
-                android:textSize="14sp"
-                android:textColor="#424242"
-                android:layout_marginBottom="8dp" />
+                android:textColor="@color/text_hint"
+                android:textSize="14sp" />
 
             <TextView
                 android:id="@+id/tv_step4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="4. Come back to this app \u2014 data will load automatically"
-                android:textSize="14sp"
-                android:textColor="#424242" />
+                android:textColor="@color/text_hint"
+                android:textSize="14sp" />
         </LinearLayout>
 
         <Button
             android:id="@+id/btn_grant_permission"
             android:layout_width="match_parent"
             android:layout_height="52dp"
+            android:background="@drawable/bg_button_start"
+            android:stateListAnimator="@null"
             android:text="\u2192  Open Usage Access Settings"
+            android:textAllCaps="false"
             android:textColor="@android:color/white"
             android:textSize="15sp"
-            android:textStyle="bold"
-            android:textAllCaps="false"
-            android:background="@drawable/bg_button_start"
-            android:stateListAnimator="@null" />
+            android:textStyle="bold" />
     </LinearLayout>
 
     <!-- Scrollable list of per-app usage items -->

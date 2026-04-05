@@ -1,0 +1,12 @@
+<resources>
+    <!-- Dark application theme: Material Dark with no action bar, auto-selected by system -->
+    <style name="Theme.NetSpeedMonitor" parent="android:Theme.Material.NoActionBar">
+        <!-- Dark status bar matching the dark background -->
+        <item name="android:statusBarColor">@color/status_bar_color</item>
+        <!-- Light status bar icons disabled for dark background -->
+        <item name="android:windowLightStatusBar">false</item>
+        <!-- Dark navigation bar matching the dark background -->
+        <item name="android:navigationBarColor">@color/surface</item>
+    </style>
+</resources>
+

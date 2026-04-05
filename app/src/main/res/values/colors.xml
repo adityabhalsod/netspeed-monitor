@@ -4,8 +4,46 @@
     <color name="download_green">#00E676</color>
     <!-- Upload speed indicator color: bright orange -->
     <color name="upload_orange">#FF9100</color>
-    <!-- App background -->
+
+    <!-- === App-level theme colors (light mode defaults) === -->
+
+    <!-- Main screen background -->
     <color name="background">#FAFAFA</color>
+    <!-- Surface color for cards, toolbar, tab bar -->
+    <color name="surface">#FFFFFF</color>
+    <!-- Primary text: headings, values, main content -->
+    <color name="text_primary">#212121</color>
+    <!-- Secondary text: subtitles, descriptions -->
+    <color name="text_secondary">#757575</color>
+    <!-- Muted text: placeholders, inactive labels -->
+    <color name="text_muted">#888888</color>
+    <!-- Hint text: step instructions, secondary info -->
+    <color name="text_hint">#424242</color>
+    <!-- Divider/separator lines between sections -->
+    <color name="divider">#E0E0E0</color>
+    <!-- Card border stroke color -->
+    <color name="card_border">#E0E0E0</color>
+    <!-- Icon tint for toolbar and navigation icons -->
+    <color name="icon_tint">#757575</color>
+    <!-- Status bar background color -->
+    <color name="status_bar_color">#FAFAFA</color>
+
+    <!-- Filter pill backgrounds: inactive/active states -->
+    <color name="filter_inactive_bg">#F0F0F0</color>
+    <color name="filter_active_bg">#212121</color>
+    <!-- Filter pill text: active state (light on dark) -->
+    <color name="filter_active_text">#FFFFFF</color>
+
+    <!-- Column header row background in data report -->
+    <color name="column_header_bg">#F0F0F0</color>
+    <!-- Alternating even-row background in data report -->
+    <color name="row_even_bg">#F5F5F5</color>
+
+    <!-- Warning banner colors -->
+    <color name="warning_bg">#FFF3E0</color>
+    <color name="warning_border">#FFB74D</color>
+    <color name="warning_title">#E65100</color>
+    <color name="warning_text">#BF360C</color>
 
     <!-- Widget colors: Light mode defaults -->
     <!-- Main widget background -->

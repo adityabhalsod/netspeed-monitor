@@ -82,9 +82,16 @@ public class MainActivity extends Activity implements SpeedMonitorService.SpeedC
     private TextView tabLabelApps;
     private TextView tabLabelReport;
 
-    // Active tab color and inactive tab color
-    private static final int COLOR_TAB_ACTIVE = 0xFF212121;
-    private static final int COLOR_TAB_INACTIVE = 0xFF888888;
+    // Active/inactive tab colors resolved from resources (adapts to dark mode)
+    private int colorTabActive;
+    private int colorTabInactive;
+    // Resolved theme-aware colors for dynamically-built views
+    private int colorTextPrimary;
+    private int colorTextMuted;
+    private int colorRowEvenBg;
+    // Resolved filter pill colors for active/inactive states
+    private int colorFilterActiveText;
+    private int colorFilterInactiveText;
 
     // Shared preferences for persisting monitoring state
     private SharedPreferences prefs;
@@ -124,6 +131,15 @@ public class MainActivity extends Activity implements SpeedMonitorService.SpeedC
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Resolve theme-aware colors from resources (auto-switches for dark mode)
+        colorTabActive = getColor(R.color.text_primary);
+        colorTabInactive = getColor(R.color.text_muted);
+        colorTextPrimary = getColor(R.color.text_primary);
+        colorTextMuted = getColor(R.color.text_muted);
+        colorRowEvenBg = getColor(R.color.row_even_bg);
+        colorFilterActiveText = getColor(R.color.filter_active_text);
+        colorFilterInactiveText = getColor(R.color.text_muted);
 
         // Initialize SharedPreferences for app settings
         prefs = getSharedPreferences("settings", MODE_PRIVATE);
@@ -327,19 +343,19 @@ public class MainActivity extends Activity implements SpeedMonitorService.SpeedC
      * Highlights the active tab icon/label and dims the others.
      */
     private void updateTabBarColors(int activeTab) {
-        // Tab 1: Speed
-        tabIconSpeed.setColorFilter(activeTab == 0 ? COLOR_TAB_ACTIVE : COLOR_TAB_INACTIVE);
-        tabLabelSpeed.setTextColor(activeTab == 0 ? COLOR_TAB_ACTIVE : COLOR_TAB_INACTIVE);
+        // Tab 1: Speed — highlight or dim based on active state
+        tabIconSpeed.setColorFilter(activeTab == 0 ? colorTabActive : colorTabInactive);
+        tabLabelSpeed.setTextColor(activeTab == 0 ? colorTabActive : colorTabInactive);
         tabLabelSpeed.setTypeface(null, activeTab == 0 ? Typeface.BOLD : Typeface.NORMAL);
 
-        // Tab 2: Apps
-        tabIconApps.setColorFilter(activeTab == 1 ? COLOR_TAB_ACTIVE : COLOR_TAB_INACTIVE);
-        tabLabelApps.setTextColor(activeTab == 1 ? COLOR_TAB_ACTIVE : COLOR_TAB_INACTIVE);
+        // Tab 2: Apps — highlight or dim based on active state
+        tabIconApps.setColorFilter(activeTab == 1 ? colorTabActive : colorTabInactive);
+        tabLabelApps.setTextColor(activeTab == 1 ? colorTabActive : colorTabInactive);
         tabLabelApps.setTypeface(null, activeTab == 1 ? Typeface.BOLD : Typeface.NORMAL);
 
-        // Tab 3: Report
-        tabIconReport.setColorFilter(activeTab == 2 ? COLOR_TAB_ACTIVE : COLOR_TAB_INACTIVE);
-        tabLabelReport.setTextColor(activeTab == 2 ? COLOR_TAB_ACTIVE : COLOR_TAB_INACTIVE);
+        // Tab 3: Report — highlight or dim based on active state
+        tabIconReport.setColorFilter(activeTab == 2 ? colorTabActive : colorTabInactive);
+        tabLabelReport.setTextColor(activeTab == 2 ? colorTabActive : colorTabInactive);
         tabLabelReport.setTypeface(null, activeTab == 2 ? Typeface.BOLD : Typeface.NORMAL);
     }
 
@@ -413,7 +429,7 @@ public class MainActivity extends Activity implements SpeedMonitorService.SpeedC
             tvStatus.setBackgroundResource(R.drawable.bg_status_monitoring);
         } else {
             tvStatus.setText("Stopped");
-            tvStatus.setTextColor(0xFF888888);
+            tvStatus.setTextColor(colorTextMuted);
             tvStatus.setBackgroundResource(R.drawable.bg_status_stopped);
             gaugeDownload.setSpeed(0);
             gaugeUpload.setSpeed(0);
@@ -528,14 +544,14 @@ public class MainActivity extends Activity implements SpeedMonitorService.SpeedC
     private void selectFilter(int period) {
         selectedPeriod = period;
 
-        // Update pill visual states
+        // Update pill visual states with theme-aware colors
         for (int i = 0; i < filterPills.length; i++) {
             if (i == period) {
                 filterPills[i].setBackgroundResource(R.drawable.bg_filter_active);
-                filterPills[i].setTextColor(0xFFFFFFFF);
+                filterPills[i].setTextColor(colorFilterActiveText);
             } else {
                 filterPills[i].setBackgroundResource(R.drawable.bg_filter_inactive);
-                filterPills[i].setTextColor(0xFF888888);
+                filterPills[i].setTextColor(colorFilterInactiveText);
             }
         }
 
@@ -553,11 +569,11 @@ public class MainActivity extends Activity implements SpeedMonitorService.SpeedC
         appListScroll.setVisibility(View.VISIBLE);
 
         if (apps.isEmpty()) {
-            // Show empty state message
+            // Show empty state message with theme-aware muted color
             TextView emptyMsg = new TextView(this);
             emptyMsg.setText("No app usage data for this period");
             emptyMsg.setTextSize(14);
-            emptyMsg.setTextColor(0xFF888888);
+            emptyMsg.setTextColor(colorTextMuted);
             emptyMsg.setGravity(Gravity.CENTER);
             emptyMsg.setPadding(0, dpToPx(48), 0, 0);
             appListContainer.addView(emptyMsg);
@@ -597,30 +613,30 @@ public class MainActivity extends Activity implements SpeedMonitorService.SpeedC
                     0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f);
             textCol.setLayoutParams(textLp);
 
-            // App name
+            // App name with theme-aware primary text color
             TextView name = new TextView(this);
             name.setText(app.appName);
             name.setTextSize(14);
-            name.setTextColor(0xFF212121);
+            name.setTextColor(colorTextPrimary);
             name.setTypeface(null, Typeface.BOLD);
             name.setMaxLines(1);
             textCol.addView(name);
 
-            // Download/upload breakdown
+            // Download/upload breakdown with theme-aware muted color
             TextView detail = new TextView(this);
             detail.setText("\u2193 " + SpeedUtils.formatBytes(app.rxBytes)
                     + "  \u2191 " + SpeedUtils.formatBytes(app.txBytes));
             detail.setTextSize(12);
-            detail.setTextColor(0xFF888888);
+            detail.setTextColor(colorTextMuted);
             textCol.addView(detail);
 
             row.addView(textCol);
 
-            // Total usage on the right
+            // Total usage on the right with theme-aware primary color
             TextView total = new TextView(this);
             total.setText(SpeedUtils.formatBytes(app.totalBytes));
             total.setTextSize(14);
-            total.setTextColor(0xFF212121);
+            total.setTextColor(colorTextPrimary);
             total.setTypeface(null, Typeface.BOLD);
             row.addView(total);
 
@@ -703,7 +719,8 @@ public class MainActivity extends Activity implements SpeedMonitorService.SpeedC
             TextView emptyMsg = new TextView(this);
             emptyMsg.setText("No data for this month");
             emptyMsg.setTextSize(14);
-            emptyMsg.setTextColor(0xFF888888);
+            // Use theme-aware muted color for empty state
+            emptyMsg.setTextColor(colorTextMuted);
             emptyMsg.setGravity(Gravity.CENTER);
             emptyMsg.setPadding(0, dpToPx(48), 0, 0);
             reportListContainer.addView(emptyMsg);
@@ -721,16 +738,16 @@ public class MainActivity extends Activity implements SpeedMonitorService.SpeedC
             row.setLayoutParams(new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
 
-            // Alternate row background for readability
+            // Alternate row background for readability (theme-aware)
             if (day.dayOfMonth % 2 == 0) {
-                row.setBackgroundColor(0xFFF5F5F5);
+                row.setBackgroundColor(colorRowEvenBg);
             }
 
-            // Date label (weight 2)
+            // Date label (weight 2) with theme-aware primary color
             TextView dateView = new TextView(this);
             dateView.setText(day.dateLabel);
             dateView.setTextSize(13);
-            dateView.setTextColor(0xFF212121);
+            dateView.setTextColor(colorTextPrimary);
             dateView.setLayoutParams(new LinearLayout.LayoutParams(
                     0, LinearLayout.LayoutParams.WRAP_CONTENT, 2f));
             row.addView(dateView);

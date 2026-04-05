@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#FAFAFA">
+    android:background="@color/background">
 
     <!-- Top bar with back button and title -->
     <RelativeLayout
@@ -12,7 +12,7 @@
         android:layout_height="56dp"
         android:paddingStart="8dp"
         android:paddingEnd="16dp"
-        android:background="@android:color/white"
+        android:background="@color/surface"
         android:elevation="2dp">
 
         <!-- Back arrow button -->
@@ -36,7 +36,7 @@
             android:text="@string/settings_title"
             android:textSize="20sp"
             android:textStyle="bold"
-            android:textColor="#212121" />
+            android:textColor="@color/text_primary" />
     </RelativeLayout>
 
     <!-- Settings content -->
@@ -71,14 +71,14 @@
                     android:text="@string/settings_start_on_boot"
                     android:textSize="16sp"
                     android:textStyle="bold"
-                    android:textColor="#212121" />
+                    android:textColor="@color/text_primary" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/settings_start_on_boot_summary"
                     android:textSize="13sp"
-                    android:textColor="#757575"
+                    android:textColor="@color/text_secondary"
                     android:layout_marginTop="4dp" />
             </LinearLayout>
 

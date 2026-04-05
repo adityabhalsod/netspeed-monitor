@@ -1,5 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- === App-level theme colors (dark mode overrides) === -->
+
+    <!-- Main screen background: near-black -->
+    <color name="background">#121212</color>
+    <!-- Surface color for cards, toolbar, tab bar: dark grey -->
+    <color name="surface">#1E1E2E</color>
+    <!-- Primary text: bright white for readability on dark -->
+    <color name="text_primary">#E0E0E0</color>
+    <!-- Secondary text: muted white for labels -->
+    <color name="text_secondary">#B0B0B0</color>
+    <!-- Muted text: dimmer for inactive labels -->
+    <color name="text_muted">#707070</color>
+    <!-- Hint text: lighter for step instructions -->
+    <color name="text_hint">#BDBDBD</color>
+    <!-- Divider/separator lines: subtle on dark -->
+    <color name="divider">#2C2C2C</color>
+    <!-- Card border stroke: subtle on dark -->
+    <color name="card_border">#2C2C2C</color>
+    <!-- Icon tint: lighter for visibility on dark -->
+    <color name="icon_tint">#B0B0B0</color>
+    <!-- Status bar background: matches dark background -->
+    <color name="status_bar_color">#121212</color>
+
+    <!-- Filter pill backgrounds: inverted for dark mode -->
+    <color name="filter_inactive_bg">#2A2A3A</color>
+    <color name="filter_active_bg">#E0E0E0</color>
+    <!-- Filter pill text: dark on light for active state -->
+    <color name="filter_active_text">#121212</color>
+
+    <!-- Column header row background: dark variant -->
+    <color name="column_header_bg">#1A1A2A</color>
+    <!-- Alternating even-row background: subtle dark variant -->
+    <color name="row_even_bg">#1A1A2A</color>
+
+    <!-- Warning banner: dark warm tones for dark mode -->
+    <color name="warning_bg">#3E2723</color>
+    <color name="warning_border">#8D6E63</color>
+    <color name="warning_title">#FFAB91</color>
+    <color name="warning_text">#FFCCBC</color>
+
     <!-- Widget colors: Dark mode overrides -->
     <!-- Main widget background: dark translucent -->
     <color name="widget_bg">#E61E1E2E</color>
