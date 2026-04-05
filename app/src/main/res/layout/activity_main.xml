@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#FAFAFA">
+    android:background="@color/background">
 
     <!-- Top bar with app title and settings button -->
     <RelativeLayout
@@ -12,7 +12,7 @@
         android:layout_height="56dp"
         android:paddingStart="16dp"
         android:paddingEnd="8dp"
-        android:background="@android:color/white"
+        android:background="@color/surface"
         android:elevation="2dp">
 
         <!-- App title -->
@@ -23,7 +23,7 @@
             android:text="@string/app_name"
             android:textSize="20sp"
             android:textStyle="bold"
-            android:textColor="#212121" />
+            android:textColor="@color/text_primary" />
 
         <!-- Settings gear button -->
         <ImageButton
@@ -92,14 +92,14 @@
                             android:text="Notification Permission Required"
                             android:textSize="13sp"
                             android:textStyle="bold"
-                            android:textColor="#E65100" />
+                            android:textColor="@color/warning_title" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Speed monitoring needs notification access to show real-time stats."
                             android:textSize="12sp"
-                            android:textColor="#BF360C"
+                            android:textColor="@color/warning_text"
                             android:layout_marginTop="2dp" />
                     </LinearLayout>
 
@@ -111,7 +111,7 @@
                         android:text="Grant"
                         android:textSize="13sp"
                         android:textStyle="bold"
-                        android:textColor="#E65100"
+                        android:textColor="@color/warning_title"
                         android:padding="8dp" />
                 </LinearLayout>
 
@@ -124,7 +124,7 @@
                     android:text="Stopped"
                     android:textSize="12sp"
                     android:textStyle="bold"
-                    android:textColor="#888888"
+                    android:textColor="@color/text_muted"
                     android:background="@drawable/bg_status_stopped"
                     android:paddingStart="16dp"
                     android:paddingEnd="16dp"
@@ -182,7 +182,7 @@
                         android:text="Session Usage"
                         android:textSize="16sp"
                         android:textStyle="bold"
-                        android:textColor="#212121"
+                        android:textColor="@color/text_primary"
                         android:layout_marginBottom="16dp" />
 
                     <!-- Download usage row -->
@@ -198,7 +198,7 @@
                             android:layout_centerVertical="true"
                             android:text="\u2193 Downloaded"
                             android:textSize="14sp"
-                            android:textColor="#00E676" />
+                            android:textColor="@color/download_green" />
 
                         <TextView
                             android:id="@+id/tv_session_rx"
@@ -209,7 +209,7 @@
                             android:text="0 B"
                             android:textSize="14sp"
                             android:textStyle="bold"
-                            android:textColor="#212121" />
+                            android:textColor="@color/text_primary" />
                     </RelativeLayout>
 
                     <!-- Upload usage row -->
@@ -224,7 +224,7 @@
                             android:layout_centerVertical="true"
                             android:text="\u2191 Uploaded"
                             android:textSize="14sp"
-                            android:textColor="#FF9100" />
+                            android:textColor="@color/upload_orange" />
 
                         <TextView
                             android:id="@+id/tv_session_tx"
@@ -235,7 +235,7 @@
                             android:text="0 B"
                             android:textSize="14sp"
                             android:textStyle="bold"
-                            android:textColor="#212121" />
+                            android:textColor="@color/text_primary" />
                     </RelativeLayout>
                 </LinearLayout>
 
@@ -297,7 +297,7 @@
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:src="@drawable/ic_tab_speed"
-                android:tint="#212121" />
+                android:tint="@color/text_primary" />
 
             <TextView
                 android:id="@+id/tab_label_speed"
@@ -306,7 +306,7 @@
                 android:text="Speed"
                 android:textSize="11sp"
                 android:textStyle="bold"
-                android:textColor="#212121"
+                android:textColor="@color/text_primary"
                 android:layout_marginTop="2dp" />
         </LinearLayout>
 
@@ -325,7 +325,7 @@
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:src="@drawable/ic_tab_apps"
-                android:tint="#888888" />
+                android:tint="@color/text_muted" />
 
             <TextView
                 android:id="@+id/tab_label_apps"
@@ -333,7 +333,7 @@
                 android:layout_height="wrap_content"
                 android:text="Apps"
                 android:textSize="11sp"
-                android:textColor="#888888"
+                android:textColor="@color/text_muted"
                 android:layout_marginTop="2dp" />
         </LinearLayout>
 
@@ -352,7 +352,7 @@
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:src="@drawable/ic_tab_report"
-                android:tint="#888888" />
+                android:tint="@color/text_muted" />
 
             <TextView
                 android:id="@+id/tab_label_report"
@@ -360,7 +360,7 @@
                 android:layout_height="wrap_content"
                 android:text="Report"
                 android:textSize="11sp"
-                android:textColor="#888888"
+                android:textColor="@color/text_muted"
                 android:layout_marginTop="2dp" />
         </LinearLayout>
 

@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Tab bar background: white with top divider -->
+<!-- Tab bar background: surface color with top divider, adapts to dark mode -->
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <!-- Thin top border line -->
     <item android:top="0dp" android:bottom="0dp">
         <shape android:shape="rectangle">
-            <solid android:color="#E0E0E0" />
+            <solid android:color="@color/divider" />
         </shape>
     </item>
-    <!-- White background covering most of the area -->
+    <!-- Surface background covering most of the area -->
     <item android:top="1dp">
         <shape android:shape="rectangle">
-            <solid android:color="@android:color/white" />
+            <solid android:color="@color/surface" />
         </shape>
     </item>
 </layer-list>
