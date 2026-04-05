@@ -72,6 +72,8 @@ Real-time upload & download speed in your status bar — updated every second.
 | 📊 **Per-app data tracking** | Uses `NetworkStatsManager` to show per-app download/upload breakdown |
 | 📅 **Monthly reports** | Day-by-day WiFi vs mobile data consumption with monthly totals |
 | 🔄 **Live refresh** | App usage tab auto-refreshes every 3 seconds without UI flicker |
+| 🌙 **Dark mode** | Automatic dark/light theme switching based on system setting — `values-night/` overrides |
+| 🎨 **Theme-aware colors** | All UI colors resolve from resources at runtime — no hardcoded hex values |
 | 🔋 **Battery friendly** | Reads kernel byte counters — no packet inspection, no wake locks |
 | 📶 **All interfaces** | Tracks WiFi, mobile data, ethernet — all at once |
 | 🔁 **Start on boot** | `BootReceiver` auto-restarts monitoring after device reboot |
@@ -146,10 +148,13 @@ netspeed-monitor/
 │           │   └── content_data_report.xml # Monthly data report tab content
 │           ├── drawable/                   # 18 vector icons + shape backgrounds
 │           ├── mipmap-*/                   # Adaptive launcher icons (5 densities)
-│           └── values/
-│               ├── colors.xml              # Download green, upload orange, background
-│               ├── strings.xml             # All user-visible strings
-│               └── themes.xml              # Material Light NoActionBar theme
+           ├── values/
+           │   ├── colors.xml              # Light mode color palette (theme-aware tokens)
+           │   ├── strings.xml             # All user-visible strings
+           │   └── themes.xml              # Material Light NoActionBar + status/nav bar colors
+           └── values-night/
+               ├── colors.xml              # Dark mode color overrides (auto-selected by system)
+               └── themes.xml              # Material Dark NoActionBar theme
 ├── assets/
 │   └── bandwidth.png                       # App icon source asset
 ├── build.gradle.kts                        # Root build config (AGP 8.3.0 only)
@@ -211,13 +216,13 @@ netspeed-monitor/
 | Class | Lines | Responsibility |
 |---|---|---|
 | `NetSpeedApp` | ~30 | Creates notification channel with badge suppression |
-| `MainActivity` | ~500 | 3-tab dashboard, permission handling, live refresh timer |
+| `MainActivity` | ~550 | 3-tab dashboard, permission handling, live refresh timer, theme-aware color resolution |
 | `SettingsActivity` | ~50 | Start-on-boot toggle via `SharedPreferences` |
 | `SpeedMonitorService` | ~200 | Foreground service, 100ms Timer, notification updates |
 | `BootReceiver` | ~25 | Handles `BOOT_COMPLETED` → starts service |
 | `TrafficStatsCalculator` | ~100 | Sliding-window speed calculation from `TrafficStats` API |
 | `SpeedIconGenerator` | ~80 | Renders 130×130 `ALPHA_8` bitmap with speed text |
-| `SpeedGaugeView` | ~200 | Custom `View` with arc track, filled arc, and text labels |
+| `SpeedGaugeView` | ~220 | Custom `View` with arc track, filled arc, text labels — theme-aware colors |
 | `SpeedUtils` | ~40 | Format bytes/speed to human-readable strings (B/s → GB/s) |
 | `AppUsageTracker` | ~150 | Queries `NetworkStatsManager` for per-app usage by UID |
 | `DataUsageReport` | ~120 | Queries daily WiFi + mobile totals for a given month |
@@ -351,16 +356,18 @@ This app respects your privacy completely:
 |---|---|
 | **Language** | Java 17 (source compatibility: Java 11) |
 | **UI Framework** | Android `View` system + Custom `Canvas` drawing |
-| **Custom Views** | `SpeedGaugeView` — 270° arc gauge with `Paint`/`Canvas` |
+| **Custom Views** | `SpeedGaugeView` — 270° arc gauge with `Paint`/`Canvas`, theme-aware colors |
 | **Async** | `java.util.Timer` (100ms) + `android.os.Handler` (main thread) |
 | **Background** | `ExecutorService` (single thread) for off-thread data queries |
 | **Storage** | `SharedPreferences` for settings |
 | **DI** | None — manual singleton pattern |
 | **Build System** | Gradle 8.5 + AGP 8.3.0 |
 | **Code Shrinking** | R8 with 5 optimization passes |
+| **Dark Mode** | `values-night/` resource overrides — automatic light/dark switching |
 | **Min SDK** | API 26 (Android 8.0 Oreo) |
 | **Target SDK** | API 34 (Android 14) |
 | **Dependencies** | **Zero** — only `android.jar` from the Android SDK |
+| **Theming** | `values/themes.xml` (light) + `values-night/themes.xml` (dark) — auto-selected by OS |
 | **Release APK** | **~182 KB** |
 
 ### Why Zero Dependencies?
@@ -697,6 +704,15 @@ R8 code shrinking rules:
 </details>
 
 <details>
+<summary><b>Dark mode not applying correctly</b></summary>
+
+- The app follows the **system dark mode** setting automatically — no in-app toggle is needed
+- Go to **Settings → Display → Dark theme** (or equivalent on your device) to switch
+- If colors appear incorrect after toggling, force-close and reopen the app to re-resolve theme colors
+
+</details>
+
+<details>
 <summary><b>Build fails with "JDK not found"</b></summary>
 
 - This project requires **JDK 17** (not 8, not 11, not 21)
@@ -745,7 +761,6 @@ Contributions are welcome! Here's how to get started:
 
 - 🌍 **Localization** — translate `strings.xml` to your language
 - 📊 **Graph visualization** — speed history graph on the Speed tab
-- 🎨 **Theming** — dark mode support
 - 🔔 **Speed alerts** — notify when speed drops below a threshold
 - 📱 **Widget** — home screen speed widget
 - 🧪 **Unit tests** — test `TrafficStatsCalculator` and `SpeedUtils`
