@@ -96,6 +96,9 @@ public class AppUsageTracker {
 
         // Convert UID map to a list of AppUsageInfo objects
         List<AppUsageInfo> result = new ArrayList<>();
+        // Aggregate all unresolvable UIDs (system services, kernel, etc.) into a single bucket
+        long systemRx = 0L;
+        long systemTx = 0L;
         for (Map.Entry<Integer, long[]> entry : uidMap.entrySet()) {
             int uid = entry.getKey();
             long[] bytes = entry.getValue();
@@ -105,21 +108,56 @@ public class AppUsageTracker {
             // Skip UIDs with zero traffic — no point showing them
             if (rx + tx <= 0) continue;
 
+            // Special UIDs that don't map to user-installed apps:
+            //   UID_ALL (-1)       → aggregate buckets that cover everything
+            //   UID_REMOVED (-4)   → traffic from uninstalled apps
+            //   UID_TETHERING (-5) → tethering passthrough traffic
+            //   < 1000             → kernel/root/system services (no APK)
+            // These are real traffic but have no resolvable package, so roll them
+            // into a single synthetic "System" entry instead of dropping them.
+            if (uid < 1000) {
+                systemRx += rx;
+                systemTx += tx;
+                continue;
+            }
+
             // Resolve the UID to package names (one UID can map to multiple packages)
             String[] packages = packageManager.getPackagesForUid(uid);
-            if (packages == null || packages.length == 0) continue;
-
-            // Use the first package name for this UID
-            String pkgName = packages[0];
-            try {
-                // Load application metadata for display name and icon
-                ApplicationInfo appInfo = packageManager.getApplicationInfo(pkgName, 0);
-                String appName = packageManager.getApplicationLabel(appInfo).toString();
-                Drawable icon = packageManager.getApplicationIcon(appInfo);
-                result.add(new AppUsageInfo(appName, pkgName, icon, rx, tx));
-            } catch (PackageManager.NameNotFoundException e) {
-                // App was uninstalled — skip this entry
+            if (packages == null || packages.length == 0) {
+                // UID has no visible package (likely hidden by package visibility rules
+                // on Android 11+). Show it as a generic entry so the user sees the
+                // traffic instead of silently losing it.
+                result.add(new AppUsageInfo(
+                        "Unknown app (UID " + uid + ")", "uid:" + uid, null, rx, tx));
+                continue;
             }
+
+            // Pick the first resolvable package — for shared UIDs we try each one
+            // until we find one PackageManager can hand us metadata for.
+            AppUsageInfo info = null;
+            for (String pkgName : packages) {
+                try {
+                    ApplicationInfo appInfo = packageManager.getApplicationInfo(pkgName, 0);
+                    String appName = packageManager.getApplicationLabel(appInfo).toString();
+                    Drawable icon = packageManager.getApplicationIcon(appInfo);
+                    info = new AppUsageInfo(appName, pkgName, icon, rx, tx);
+                    break;
+                } catch (PackageManager.NameNotFoundException e) {
+                    // This package isn't visible to us — try the next shared package
+                }
+            }
+            if (info != null) {
+                result.add(info);
+            } else {
+                // None of the shared packages were visible — still surface the traffic
+                // under the first package name so it isn't lost.
+                result.add(new AppUsageInfo(packages[0], packages[0], null, rx, tx));
+            }
+        }
+
+        // Add the rolled-up system traffic as a single entry if it has any data
+        if (systemRx + systemTx > 0) {
+            result.add(new AppUsageInfo("System", "android.system", null, systemRx, systemTx));
         }
 
         // Sort by total usage descending — highest consumers at the top

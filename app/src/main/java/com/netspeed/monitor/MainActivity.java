@@ -603,7 +603,13 @@ public class MainActivity extends Activity implements SpeedMonitorService.SpeedC
             LinearLayout.LayoutParams iconLp = new LinearLayout.LayoutParams(iconSize, iconSize);
             iconLp.setMarginEnd(dpToPx(12));
             icon.setLayoutParams(iconLp);
-            icon.setImageDrawable(app.icon);
+            // Use the app's icon if available; fall back to the system default
+            // for entries without a resolvable package (e.g. aggregated System row).
+            if (app.icon != null) {
+                icon.setImageDrawable(app.icon);
+            } else {
+                icon.setImageResource(android.R.drawable.sym_def_app_icon);
+            }
             row.addView(icon);
 
             // Text column: app name + download/upload detail
