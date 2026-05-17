@@ -15,6 +15,26 @@
     <!-- Permission to query per-app network usage stats via NetworkStatsManager -->
     <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS"
         android:maxSdkVersion="999" />
+    <!-- Required on Android 11+ (API 30+) to enumerate all installed apps. -->
+    <!-- Without this, getPackagesForUid() and getApplicationInfo() return only -->
+    <!-- visible packages, so most user apps (browsers, etc.) are silently dropped. -->
+    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" />
+
+    <!-- Fallback for stores that disallow QUERY_ALL_PACKAGES: declare broad query intents -->
+    <!-- so the system grants visibility to any launchable or browsable app. -->
+    <queries>
+        <!-- Match any app with a launcher activity (covers user-installed apps) -->
+        <intent>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent>
+        <!-- Match any app that handles web URLs (covers all browsers) -->
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <category android:name="android.intent.category.BROWSABLE" />
+            <data android:scheme="https" />
+        </intent>
+    </queries>
 
     <application
         android:name=".NetSpeedApp"
